@@ -1,6 +1,7 @@
 <!doctype html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>結の郷｜古着出品アシスト</title><style>
 :root{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans JP',system-ui,sans-serif;color:#222;background:#f7f7f6}*{box-sizing:border-box}body{margin:0}header{padding:26px max(20px,calc((100vw - 1100px)/2));background:#fff;border-bottom:1px solid #ddd}header h1{font-size:23px;letter-spacing:-.02em;margin:6px 0}small,.muted{color:#727272;font-size:12px}[hidden]{display:none!important}main{max-width:1100px;margin:26px auto;padding:0 16px 44px;display:grid;grid-template-columns:1.04fr 1fr;gap:18px;align-items:start}.card{background:white;border:1px solid #dedede;border-radius:14px;padding:20px;margin-bottom:16px}h2{font-size:16px;margin:0 0 14px}h3{font-size:14px}.drop{border:2px dashed #aaa;border-radius:12px;background:#fafafa;cursor:pointer;padding:30px;text-align:center}.drop.drag{border-color:#111;background:#eee}.button{background:#fff;color:#222;border:1px solid #ccc;padding:10px 14px;border-radius:8px;font:600 13px inherit;cursor:pointer}.button.dark{background:#222;color:#fff;border-color:#222}.button:disabled{opacity:.4;cursor:not-allowed}.btnrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.photoGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.photoBox{position:relative;background:repeating-conic-gradient(#eee 0 25%,#ddd 0 50%) 50%/20px 20px;border-radius:8px;overflow:hidden}.photoBox canvas,.photoBox img{display:block;width:100%;height:auto}.pin{position:absolute;transform:translate(-50%,-50%);background:#df6536;color:white;border:2px solid white;border-radius:50%;width:26px;height:26px;font-weight:bold;cursor:pointer;box-shadow:0 0 0 3px #df653655}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}label{font-size:13px;font-weight:600;display:block;margin:0 0 5px}input[type=text],select,textarea{display:block;width:100%;padding:10px;background:#fff;color:#222;border:1px solid #ccc;border-radius:8px;font:14px inherit}textarea{resize:vertical}input[type=checkbox]{accent-color:#222}.candidate{padding:13px;border:1px solid #ddd;border-radius:10px;margin-top:10px}.candidate .grid{margin:10px 0}.checkboxes{display:grid;grid-template-columns:1fr 1fr;gap:8px}.checkboxes label{font-weight:400}.tip{background:#f1f1ef;padding:12px;border-radius:9px;font-size:12px;color:#555;line-height:1.7}.status{font-size:13px;color:#666;margin-top:10px}section>div+div{margin-top:11px}@media(max-width:760px){main{display:block}.card{padding:15px}header{padding:22px 18px}.drop{padding:22px 12px}}
-</style></head><body><header><small>株式会社 結の郷 様 ／ 実証用プロトタイプ</small><h1>古着出品アシスト</h1><small>写真・状態確認・背景加工・出品文作成を一つの画面で</small></header><main><section><div class="card"><h2>01 / 商品写真</h2><div class="drop" id="drop" role="button" tabindex="0">▧<br><strong>写真を選ぶ / ドロップする</strong><p class="muted">JPG・PNG・WebP</p></div><input type="file" id="file" accept="image/jpeg,image/png,image/webp" hidden><div id="photowrap" hidden><p class="muted">検出候補の番号は画像上に表示します。クリックすると確認欄へ移動します。</p><div class="photoGrid"><div><label>元写真と検出位置</label><div class="photoBox" id="originalBox"><img id="original" alt="アップロードした元写真"><div id="pins"></div></div></div><div><label>背景違いのプレビュー</label><div class="photoBox"><img id="original-copy" alt="元写真のプレビュー"><canvas id="processed" hidden></canvas></div></div></div><div class="btnrow"><button class="button" id="bgwhite">白背景</button><button class="button" id="bggray">グレー背景</button><button class="button" id="bgreset">元写真</button><button class="button" id="saveoriginal">元ファイルを保存</button><button class="button" id="saveimage" disabled>背景違いをPNG保存</button></div><label id="confirm-background" hidden><input id="background-checked" type="checkbox"> 元写真と比べて、服の輪郭・色・汚れを確認しました</label><p class="status" id="bgstatus"></p></div></div><div class="card"><h2>02 / 商品の状態チェック</h2><div class="tip">周囲の布地と色が異なる箇所を候補として表示します。柄や照明でも反応することがあります。実物を確認し、説明文に使う箇所を選んでください。</div><div class="btnrow"><button id="scan" class="button dark" disabled>写真から色ムラ候補を探す</button></div><p id="scanstatus" class="status">最初に写真を追加してください。</p><div id="candidates"></div><h3>実物を確認して追加する状態</h3><div class="checkboxes"><label><input type="checkbox" class="defect" value="シミ・汚れあり"> シミ・汚れ</label><label><input type="checkbox" class="defect" value="毛玉あり"> 毛玉</label><label><input type="checkbox" class="defect" value="ほつれあり"> ほつれ</label><label><input type="checkbox" class="defect" value="色あせあり"> 色あせ</label></div><p><label for="notes">検品メモ</label><textarea id="notes" rows="3" placeholder="例：右袖口に小さな毛玉、前身頃の左下に薄い汚れ"></textarea></p></div></section><section><div class="card"><h2>03 / 出品情報・説明文</h2><div class="grid"><div><label for="name">品名</label><input type="text" id="name" placeholder="例：スウェット"></div><div><label for="brand">ブランド</label><input type="text" id="brand" placeholder="不明なら空欄"></div><div><label for="size">サイズ</label><input type="text" id="size" placeholder="例：L"></div><div><label for="color">カラー</label><input type="text" id="color" placeholder="実物を確認して入力"></div></div><p><button id="generate" class="button dark" style="width:100%">確認した状態を商品説明に反映</button></p><p><label for="title">商品タイトル（編集できます）</label><input type="text" id="title"></p><p><label for="description">商品説明文（編集できます）</label><textarea id="description" rows="12"></textarea></p><div class="btnrow"><button id="copy" class="button">説明文をコピー</button><button id="savetext" class="button">出品情報を保存</button></div><p id="status" class="status"></p></div><div class="card"><h2>使い方</h2><div class="tip">①写真を追加 → ②状態の候補を検索 → ③写真上の番号を確認し、服の部位と状態を選ぶ → ④実物を確認してチェック → ⑤出品文章を作成・編集 → ⑥コピーまたは保存。背景加工は元画像と必ず比較してください。</div></div></section></main>
+.edge-tools{margin-top:10px;padding:10px;border:1px solid #dedede;border-radius:8px}.edge-tools summary{cursor:pointer;font-weight:600}.edge-tools p{margin:6px 0}.edge-tools button[aria-pressed="true"]{background:#222;color:#fff}.photoBox canvas.editing{cursor:crosshair;touch-action:none}.edge-tools label{display:flex;align-items:center;gap:8px;margin-top:8px}
+</style></head><body><header><small>株式会社 結の郷 様 ／ 実証用プロトタイプ</small><h1>古着出品アシスト</h1><small>写真・状態確認・背景加工・出品文作成を一つの画面で</small></header><main><section><div class="card"><h2>01 / 商品写真</h2><div class="drop" id="drop" role="button" tabindex="0">▧<br><strong>写真を選ぶ / ドロップする</strong><p class="muted">JPG・PNG・WebP</p></div><input type="file" id="file" accept="image/jpeg,image/png,image/webp" hidden><div id="photowrap" hidden><p class="muted">検出候補の番号は画像上に表示します。クリックすると確認欄へ移動します。</p><div class="photoGrid"><div><label>元写真と検出位置</label><div class="photoBox" id="originalBox"><img id="original" alt="アップロードした元写真"><div id="pins"></div></div></div><div><label>背景違いのプレビュー</label><div class="photoBox"><img id="original-copy" alt="元写真のプレビュー"><canvas id="processed" hidden></canvas></div></div></div><div class="btnrow"><button class="button" id="bgwhite">白背景</button><button class="button" id="bggray">グレー背景</button><button class="button" id="bgreset">元写真</button><button class="button" id="saveoriginal">元ファイルを保存</button><button class="button" id="saveimage" disabled>背景違いをPNG保存</button></div><details class="edge-tools" id="edge-tools" hidden><summary>残った影・輪郭を調整</summary><p class="muted">右のプレビューに残った影をなぞります。服に触れたときは「元の画素に戻す」で戻せます。</p><div class="btnrow"><button class="button" id="erase-shadow" type="button" aria-pressed="true">背景にする</button><button class="button" id="restore-photo" type="button" aria-pressed="false">元の画素に戻す</button><button class="button" id="undo-mask" type="button" disabled>一手戻す</button><button class="button" id="reset-mask" type="button">自動判定に戻す</button></div><label>ブラシの太さ <input id="brush-size" type="range" min="2" max="28" value="8"></label></details><label id="confirm-background" hidden><input id="background-checked" type="checkbox"> 元写真と比べて、服の輪郭・色・汚れを確認しました</label><p class="status" id="bgstatus"></p></div></div><div class="card"><h2>02 / 商品の状態チェック</h2><div class="tip">周囲の布地と色が異なる箇所を候補として表示します。柄や照明でも反応することがあります。実物を確認し、説明文に使う箇所を選んでください。</div><div class="btnrow"><button id="scan" class="button dark" disabled>写真から色ムラ候補を探す</button></div><p id="scanstatus" class="status">最初に写真を追加してください。</p><div id="candidates"></div><h3>実物を確認して追加する状態</h3><div class="checkboxes"><label><input type="checkbox" class="defect" value="シミ・汚れあり"> シミ・汚れ</label><label><input type="checkbox" class="defect" value="毛玉あり"> 毛玉</label><label><input type="checkbox" class="defect" value="ほつれあり"> ほつれ</label><label><input type="checkbox" class="defect" value="色あせあり"> 色あせ</label></div><p><label for="notes">検品メモ</label><textarea id="notes" rows="3" placeholder="例：右袖口に小さな毛玉、前身頃の左下に薄い汚れ"></textarea></p></div></section><section><div class="card"><h2>03 / 出品情報・説明文</h2><div class="grid"><div><label for="name">品名</label><input type="text" id="name" placeholder="例：スウェット"></div><div><label for="brand">ブランド</label><input type="text" id="brand" placeholder="不明なら空欄"></div><div><label for="size">サイズ</label><input type="text" id="size" placeholder="例：L"></div><div><label for="color">カラー</label><input type="text" id="color" placeholder="実物を確認して入力"></div></div><p><button id="generate" class="button dark" style="width:100%">確認した状態を商品説明に反映</button></p><p><label for="title">商品タイトル（編集できます）</label><input type="text" id="title"></p><p><label for="description">商品説明文（編集できます）</label><textarea id="description" rows="12"></textarea></p><div class="btnrow"><button id="copy" class="button">説明文をコピー</button><button id="savetext" class="button">出品情報を保存</button></div><p id="status" class="status"></p></div><div class="card"><h2>使い方</h2><div class="tip">①写真を追加 → ②状態の候補を検索 → ③写真上の番号を確認し、服の部位と状態を選ぶ → ④実物を確認してチェック → ⑤出品文章を作成・編集 → ⑥コピーまたは保存。背景加工は元画像と必ず比較してください。</div></div></section></main>
 <script>
 (()=>{const $=id=>document.getElementById(id);let source=null,bgMask=null,bgOpacity=null,bgMode='reset',items=[];
 let originalImage=null, originalFile=null, originalUrl='', photoRequest=0, canExportBackground=false;
@@ -84,6 +85,7 @@ function draw() {
   $('original-copy').hidden = processed;
   canvas.hidden = !processed;
   $('confirm-background').hidden = !processed;
+  $('edge-tools').hidden = !processed;
   $('background-checked').checked = false;
   $('saveimage').disabled = true;
   if (!processed) {
@@ -96,8 +98,9 @@ function draw() {
   const ctx = canvas.getContext('2d', {willReadFrequently: true});
   ctx.drawImage(originalImage, 0, 0);
   const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  bgOpacity ??= buildBackgroundOpacity(bgMask, source.width, source.height);
-  replaceBackground(image, bgMask, bgOpacity, source.width, source.height, bgMode === 'white' ? 255 : 235);
+  const mask = adjustedMask ?? bgMask;
+  bgOpacity ??= buildBackgroundOpacity(mask, source.width, source.height);
+  replaceBackground(image, mask, bgOpacity, source.width, source.height, bgMode === 'white' ? 255 : 235);
   ctx.putImageData(image, 0, 0);
 }
 
@@ -125,7 +128,7 @@ async function load(file) {
     ctx.drawImage(image, 0, 0, analysis.width, analysis.height);
     source = ctx.getImageData(0, 0, analysis.width, analysis.height);
     bgMask = segment();
-    bgOpacity = null;
+    clearAdjustments();
     bgMode = 'reset';
     canExportBackground = width * height <= 16000000 && Math.max(width, height) <= 6000;
 
@@ -168,6 +171,100 @@ $('saveimage').onclick = () => {
     if (blob) download(blob, 'yunosato-background.png');
   }, 'image/png');
 };
+let adjustedMask = null;
+let previousMask = null;
+let stroke = null;
+let brushMode = 1;
+
+function clearAdjustments() {
+  adjustedMask = previousMask = null;
+  stroke = null;
+  bgOpacity = null;
+  $('undo-mask').disabled = true;
+}
+
+function applyBrush(mask, width, height, from, to, radius, value) {
+  const dx = to.x - from.x;
+  const dy = to.y - from.y;
+  const lengthSquared = dx * dx + dy * dy;
+  const left = Math.max(0, Math.floor(Math.min(from.x, to.x) - radius));
+  const right = Math.min(width - 1, Math.ceil(Math.max(from.x, to.x) + radius));
+  const top = Math.max(0, Math.floor(Math.min(from.y, to.y) - radius));
+  const bottom = Math.min(height - 1, Math.ceil(Math.max(from.y, to.y) + radius));
+  for (let y = top; y <= bottom; y++) {
+    for (let x = left; x <= right; x++) {
+      const projection = lengthSquared
+        ? Math.max(0, Math.min(1, ((x - from.x) * dx + (y - from.y) * dy) / lengthSquared))
+        : 0;
+      if (Math.hypot(x - from.x - dx * projection, y - from.y - dy * projection) <= radius) {
+        mask[y * width + x] = value;
+      }
+    }
+  }
+}
+
+const previewCanvas = $('processed');
+function brushPoint(event) {
+  const rect = previewCanvas.getBoundingClientRect();
+  return {x: (event.clientX - rect.left) * source.width / rect.width,
+    y: (event.clientY - rect.top) * source.height / rect.height};
+}
+
+function moveBrush(event) {
+  if (!stroke || stroke.id !== event.pointerId) return;
+  const point = brushPoint(event);
+  const radius = Number($('brush-size').value);
+  applyBrush(adjustedMask, source.width, source.height, stroke.point, point, radius, brushMode);
+  stroke.point = point;
+  // Show the stroke immediately, then render the full-resolution result on release.
+  const ctx = previewCanvas.getContext('2d');
+  const sx = previewCanvas.width / source.width;
+  const sy = previewCanvas.height / source.height;
+  ctx.save();
+  ctx.scale(sx, sy);
+  ctx.fillStyle = brushMode ? (bgMode === 'white' ? '#fff' : '#ebebeb') : 'rgba(70, 98, 125, .45)';
+  ctx.beginPath();
+  ctx.arc(point.x, point.y, radius, 0, 2 * Math.PI);
+  ctx.fill();
+  ctx.restore();
+}
+
+previewCanvas.addEventListener('pointerdown', event => {
+  if (!bgMask || !$('edge-tools').open || stroke || event.button !== 0) return;
+  $('background-checked').checked = false;
+  $('saveimage').disabled = true;
+  previousMask = adjustedMask;
+  adjustedMask = (adjustedMask ?? bgMask).slice();
+  stroke = {id: event.pointerId, point: brushPoint(event)};
+  previewCanvas.setPointerCapture(event.pointerId);
+  moveBrush(event);
+});
+previewCanvas.addEventListener('pointermove', moveBrush);
+for (const name of ['pointerup', 'pointercancel', 'lostpointercapture']) {
+  previewCanvas.addEventListener(name, event => {
+    if (!stroke || stroke.id !== event.pointerId) return;
+    stroke = null;
+    bgOpacity = null;
+    $('undo-mask').disabled = false;
+    draw();
+  });
+}
+for (const [id, value] of [['erase-shadow', 1], ['restore-photo', 0]]) {
+  $(id).onclick = () => {
+    brushMode = value;
+    $('erase-shadow').setAttribute('aria-pressed', String(value === 1));
+    $('restore-photo').setAttribute('aria-pressed', String(value === 0));
+  };
+}
+$('edge-tools').ontoggle = () => previewCanvas.classList.toggle('editing', $('edge-tools').open);
+$('undo-mask').onclick = () => {
+  adjustedMask = previousMask;
+  previousMask = null;
+  bgOpacity = null;
+  $('undo-mask').disabled = true;
+  draw();
+};
+$('reset-mask').onclick = () => { clearAdjustments(); draw(); };
 function findColorCandidates({width, height, data}, background) {
   if (!background) return [];
   const step = Math.max(4, Math.round(Math.max(width, height) / 85));
