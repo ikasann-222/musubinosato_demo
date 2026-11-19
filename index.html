@@ -1,18 +1,20 @@
 <!doctype html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>結の郷｜古着出品アシスト</title><style>
 :root{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans JP',system-ui,sans-serif;color:#222;background:#f7f7f6}*{box-sizing:border-box}body{margin:0}header{padding:26px max(20px,calc((100vw - 1100px)/2));background:#fff;border-bottom:1px solid #ddd}header h1{font-size:23px;letter-spacing:-.02em;margin:6px 0}small,.muted{color:#727272;font-size:12px}[hidden]{display:none!important}main{max-width:1100px;margin:26px auto;padding:0 16px 44px;display:grid;grid-template-columns:1.04fr 1fr;gap:18px;align-items:start}.card{background:white;border:1px solid #dedede;border-radius:14px;padding:20px;margin-bottom:16px}h2{font-size:16px;margin:0 0 14px}h3{font-size:14px}.drop{border:2px dashed #aaa;border-radius:12px;background:#fafafa;cursor:pointer;padding:30px;text-align:center}.drop.drag{border-color:#111;background:#eee}.button{background:#fff;color:#222;border:1px solid #ccc;padding:10px 14px;border-radius:8px;font:600 13px inherit;cursor:pointer}.button.dark{background:#222;color:#fff;border-color:#222}.button:disabled{opacity:.4;cursor:not-allowed}.btnrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.photoGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.photoBox{position:relative;background:repeating-conic-gradient(#eee 0 25%,#ddd 0 50%) 50%/20px 20px;border-radius:8px;overflow:hidden}.photoBox canvas,.photoBox img{display:block;width:100%;height:auto}.pin{position:absolute;transform:translate(-50%,-50%);background:#df6536;color:white;border:2px solid white;border-radius:50%;width:26px;height:26px;font-weight:bold;cursor:pointer;box-shadow:0 0 0 3px #df653655}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}label{font-size:13px;font-weight:600;display:block;margin:0 0 5px}input[type=text],select,textarea{display:block;width:100%;padding:10px;background:#fff;color:#222;border:1px solid #ccc;border-radius:8px;font:14px inherit}textarea{resize:vertical}input[type=checkbox]{accent-color:#222}.candidate{padding:13px;border:1px solid #ddd;border-radius:10px;margin-top:10px}.candidate .grid{margin:10px 0}.checkboxes{display:grid;grid-template-columns:1fr 1fr;gap:8px}.checkboxes label{font-weight:400}.tip{background:#f1f1ef;padding:12px;border-radius:9px;font-size:12px;color:#555;line-height:1.7}.status{font-size:13px;color:#666;margin-top:10px}section>div+div{margin-top:11px}@media(max-width:760px){main{display:block}.card{padding:15px}header{padding:22px 18px}.drop{padding:22px 12px}}
-</style></head><body><header><small>株式会社 結の郷 様 ／ 実証用プロトタイプ</small><h1>古着出品アシスト</h1><small>写真・状態確認・背景加工・出品文作成を一つの画面で</small></header><main><section><div class="card"><h2>01 / 商品写真</h2><div class="drop" id="drop" role="button" tabindex="0">▧<br><strong>写真を選ぶ / ドロップする</strong><p class="muted">JPG・PNG・WebP</p></div><input type="file" id="file" accept="image/jpeg,image/png,image/webp" hidden><div id="photowrap" hidden><p class="muted">検出候補の番号は画像上に表示します。クリックすると確認欄へ移動します。</p><div class="photoGrid"><div><label>元写真と検出位置</label><div class="photoBox" id="originalBox"><img id="original" alt="アップロードした元写真"><div id="pins"></div></div></div><div><label>背景違いのプレビュー</label><div class="photoBox"><img id="original-copy" alt="元写真のプレビュー"><canvas id="processed" hidden></canvas></div></div></div><div class="btnrow"><button class="button" id="bgwhite">白背景</button><button class="button" id="bggray">グレー背景</button><button class="button" id="bgreset">元写真</button><button class="button" id="saveoriginal">元ファイルを保存</button><button class="button" id="saveimage" disabled>背景違いをPNG保存</button></div><label id="confirm-background" hidden><input id="background-checked" type="checkbox"> 元写真と比べて、服の輪郭・色・汚れを確認しました</label><p class="status" id="bgstatus"></p></div></div><div class="card"><h2>02 / 商品の状態チェック</h2><div class="tip">周囲の布地と色が異なる箇所を候補として表示します。柄や照明でも反応することがあります。実物を確認し、説明文に使う箇所を選んでください。</div><div class="btnrow"><button id="scan" class="button dark" disabled>写真から色ムラ候補を探す</button></div><p id="scanstatus" class="status">最初に写真を追加してください。</p><div id="candidates"></div><h3>実物を確認して追加する状態</h3><div class="checkboxes"><label><input type="checkbox" class="defect" value="シミ・汚れあり"> シミ・汚れ</label><label><input type="checkbox" class="defect" value="毛玉あり"> 毛玉</label><label><input type="checkbox" class="defect" value="ほつれあり"> ほつれ</label><label><input type="checkbox" class="defect" value="色あせあり"> 色あせ</label></div><p><label for="notes">検品メモ</label><textarea id="notes" rows="3" placeholder="例：右袖口に小さな毛玉、前身頃の左下に薄い汚れ"></textarea></p></div></section><section><div class="card"><h2>03 / 出品情報・説明文</h2><div class="grid"><div><label for="name">品名</label><input type="text" id="name" placeholder="例：スウェット"></div><div><label for="brand">ブランド</label><input type="text" id="brand" placeholder="不明なら空欄"></div><div><label for="size">サイズ</label><input type="text" id="size" placeholder="例：L"></div><div><label for="color">カラー</label><input type="text" id="color" placeholder="実物を確認して入力"></div></div><p><button id="generate" class="button dark" style="width:100%">確認した状態を商品説明に反映</button></p><p><label for="title">商品タイトル（編集できます）</label><input type="text" id="title"></p><p><label for="description">商品説明文（編集できます）</label><textarea id="description" rows="12"></textarea></p><div class="btnrow"><button id="copy" class="button">説明文をコピー</button><button id="savetext" class="button">出品情報を保存</button></div><p id="status" class="status"></p></div><div class="card"><h2>使い方</h2><div class="tip">①写真を追加 → ②状態の候補を検索 → ③写真上の番号を確認し、服の部位と状態を選ぶ → ④実物を確認してチェック → ⑤出品文章を作成・編集 → ⑥コピーまたは保存。背景加工は元画像と必ず比較してください。</div></div><p class="muted">輪郭検出モデル：<a href="https://github.com/xuebinqin/U-2-Net">U²-Net</a> · Apache 2.0</p></section></main>
+.gallery-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin:12px 0}.photo-list{display:flex;gap:8px;overflow-x:auto;padding:3px 2px 6px}.photo-list:empty{display:none}.photo-thumb{flex:0 0 92px;width:92px;background:white;border:1px solid #ccc;border-radius:8px;padding:4px;cursor:pointer;font:inherit;font-size:11px}.photo-thumb[aria-pressed="true"]{outline:2px solid #222;outline-offset:1px}.photo-thumb img{width:100%;height:68px;display:block;object-fit:contain;background:#f3f3f1;border-radius:4px;margin-bottom:4px}.photo-thumb span{display:block;overflow-wrap:anywhere}.photo-actions{display:flex;gap:8px;align-items:end;flex-wrap:wrap;margin-bottom:12px}.photo-actions label{margin:0}.photo-actions .btnrow{margin:0}.photo-actions select{margin-top:4px}.gallery-head .button,.photo-actions .button{padding:7px 9px}
+</style></head><body><header><small>株式会社 結の郷 様 ／ 実証用プロトタイプ</small><h1>古着出品アシスト</h1><small>写真・状態確認・背景加工・出品文作成を一つの画面で</small></header><main><section><div class="card"><h2>01 / 商品写真</h2><div class="drop" id="drop" role="button" tabindex="0">▧<br><strong>写真を追加 / まとめてドロップする</strong><p class="muted">JPG・PNG・WebP</p></div><input type="file" id="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" multiple hidden>
+<div class="gallery-head"><span id="photo-count" class="muted">0 / 20枚</span><button class="button" type="button" id="download-set" disabled>写真をまとめて保存（ZIP）</button></div>
+<div id="photo-list" class="photo-list" role="group" aria-label="商品写真の一覧"></div><p id="gallery-status" class="status" role="status"></p>
+<div id="photowrap" hidden>
+<div class="photo-actions"><label>写っている面・部位<select id="photo-type"><option>未分類</option><option>正面</option><option>背面</option><option>右側面</option><option>左側面</option><option>タグ</option><option>汚れ・傷のアップ</option><option>その他</option></select></label><div class="btnrow"><button class="button" type="button" id="photo-earlier">前へ移動</button><button class="button" type="button" id="photo-later">後ろへ移動</button><button class="button" type="button" id="photo-remove">この写真を外す</button></div></div><p class="muted">検出候補の番号は画像上に表示します。クリックすると確認欄へ移動します。</p><div class="photoGrid"><div><label>元写真と検出位置</label><div class="photoBox" id="originalBox"><img id="original" alt="アップロードした元写真"><div id="pins"></div></div></div><div><label>背景違いのプレビュー</label><div class="photoBox"><img id="original-copy" alt="元写真のプレビュー"><canvas id="processed" hidden></canvas></div></div></div><div class="btnrow"><button class="button" id="bgwhite">白背景</button><button class="button" id="bggray">グレー背景</button><button class="button" id="bgreset">元写真</button><button class="button" id="saveoriginal">元ファイルを保存</button><button class="button" id="saveimage" disabled>背景違いをPNG保存</button></div><label id="confirm-background" hidden><input id="background-checked" type="checkbox"> 元写真と比べて、服の輪郭・色・汚れを確認しました</label><p class="status" id="bgstatus"></p></div></div><div class="card"><h2>02 / 商品の状態チェック</h2><div class="tip">周囲の布地と色が異なる箇所を候補として表示します。柄や照明でも反応することがあります。実物を確認し、説明文に使う箇所を選んでください。</div><div class="btnrow"><button id="scan" class="button dark" disabled>写真から色ムラ候補を探す</button></div><p id="scanstatus" class="status">最初に写真を追加してください。</p><div id="candidates"></div><p><label for="photo-note">この写真の検品メモ</label><textarea id="photo-note" rows="2" placeholder="例：背面中央に薄いシミ" disabled></textarea></p><h3>実物を確認して追加する状態</h3><div class="checkboxes"><label><input type="checkbox" class="defect" value="シミ・汚れあり"> シミ・汚れ</label><label><input type="checkbox" class="defect" value="毛玉あり"> 毛玉</label><label><input type="checkbox" class="defect" value="ほつれあり"> ほつれ</label><label><input type="checkbox" class="defect" value="色あせあり"> 色あせ</label></div><p><label for="notes">商品全体の検品メモ</label><textarea id="notes" rows="3" placeholder="例：右袖口に小さな毛玉、前身頃の左下に薄い汚れ"></textarea></p></div></section><section><div class="card"><h2>03 / 出品情報・説明文</h2><div class="grid"><div><label for="name">品名</label><input type="text" id="name" placeholder="例：スウェット"></div><div><label for="brand">ブランド</label><input type="text" id="brand" placeholder="不明なら空欄"></div><div><label for="size">サイズ</label><input type="text" id="size" placeholder="例：L"></div><div><label for="color">カラー</label><input type="text" id="color" placeholder="実物を確認して入力"></div></div><p><button id="generate" class="button dark" style="width:100%">確認した状態を商品説明に反映</button></p><p><label for="title">商品タイトル（編集できます）</label><input type="text" id="title"></p><p><label for="description">商品説明文（編集できます）</label><textarea id="description" rows="12"></textarea></p><div class="btnrow"><button id="copy" class="button">説明文をコピー</button><button id="savetext" class="button">出品情報を保存</button></div><p id="status" class="status"></p></div><div class="card"><h2>使い方</h2><div class="tip">正面・背面・側面などの写真を追加し、一覧で順番を整えます。写真ごとに背景と状態を確認し、商品説明にまとめます。ZIPには、確認済みの背景差し替え画像と、それ以外の元写真が一覧順に入ります。</div></div><p class="muted">輪郭検出モデル：<a href="https://github.com/xuebinqin/U-2-Net">U²-Net</a> · Apache 2.0</p></section></main>
 <script>
-(()=>{const $=id=>document.getElementById(id);let source=null,bgMask=null,bgMode='reset',items=[];
-let originalImage=null, originalFile=null, originalUrl='', photoRequest=0, canExportBackground=false;
-const areaOptions=['未確認','襟元','右肩','左肩','右袖','左袖','右袖口','左袖口','前身頃中央','前身頃右上','前身頃左上','前身頃右下','前身頃左下','裾','背面','その他'];const kindOptions=['シミ・汚れ','色ムラ','毛玉','ほつれ','色あせ','その他'];
+(()=>{const $=id=>document.getElementById(id);
+const areaOptions=['未確認','襟元','右肩','左肩','右袖','左袖','右袖口','左袖口','前身頃中央','前身頃右上','前身頃左上','前身頃右下','前身頃左下','身頃中央','身頃上部','身頃下部','裾','背面','その他'];const kindOptions=['シミ・汚れ','色ムラ','毛玉','ほつれ','色あせ','その他'];
 function download(blob,name){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1000)}
-function segment(){let w=source.width,h=source.height,d=source.data,n=w*h;let samples=[[1,1],[w-2,1],[1,h-2],[w-2,h-2]].map(([x,y])=>[0,1,2].map(c=>d[4*(y*w+x)+c]));let avg=[0,1,2].map(k=>samples.reduce((a,b)=>a+b[k],0)/4),spread=Math.max(...samples.map(a=>Math.hypot(...a.map((v,k)=>v-avg[k]))));if(spread>80)return null;let visited=new Uint8Array(n),queue=new Int32Array(n),head=0,tail=0;function add(p){if(visited[p])return;const i=p*4;if(Math.hypot(d[i]-avg[0],d[i+1]-avg[1],d[i+2]-avg[2])>Math.max(34,spread*1.4+17))return;visited[p]=1;queue[tail++]=p}for(let x=0;x<w;x++){add(x);add((h-1)*w+x)}for(let y=0;y<h;y++){add(y*w);add(y*w+w-1)}while(head<tail){let p=queue[head++],x=p%w,y=(p/w)|0;if(x)add(p-1);if(x<w-1)add(p+1);if(y)add(p-w);if(y<h-1)add(p+w)}return tail/n>.08&&tail/n<.94?visited:null}
+function segment(source){let w=source.width,h=source.height,d=source.data,n=w*h;let samples=[[1,1],[w-2,1],[1,h-2],[w-2,h-2]].map(([x,y])=>[0,1,2].map(c=>d[4*(y*w+x)+c]));let avg=[0,1,2].map(k=>samples.reduce((a,b)=>a+b[k],0)/4),spread=Math.max(...samples.map(a=>Math.hypot(...a.map((v,k)=>v-avg[k]))));if(spread>80)return null;let visited=new Uint8Array(n),queue=new Int32Array(n),head=0,tail=0;function add(p){if(visited[p])return;const i=p*4;if(Math.hypot(d[i]-avg[0],d[i+1]-avg[1],d[i+2]-avg[2])>Math.max(34,spread*1.4+17))return;visited[p]=1;queue[tail++]=p}for(let x=0;x<w;x++){add(x);add((h-1)*w+x)}for(let y=0;y<h;y++){add(y*w);add(y*w+w-1)}while(head<tail){let p=queue[head++],x=p%w,y=(p/w)|0;if(x)add(p-1);if(x<w-1)add(p+1);if(y)add(p-w);if(y<h-1)add(p+w)}return tail/n>.08&&tail/n<.94?visited:null}
 const runtimeUrl = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/';
 const modelUrl = 'https://huggingface.co/nfa04/u2netp-onnx/resolve/8e72726f035efc3d1918c96b020d536f2b69ba0c/u2netp.onnx';
 const modelSize = 320;
 let modelSession;
-let backgroundMap = null;
-let backgroundRequest = 0;
 
 function loadCutoutModel() {
   modelSession ??= import(runtimeUrl + 'ort.min.mjs').then(async ort => {
@@ -132,124 +134,341 @@ function composite(image, exterior, color) {
   }
 }
 
+const photos = [];
+const maxPhotos = 20;
+let activePhoto = null;
+let loadingPhotos = false;
+let inferenceQueue = Promise.resolve();
+
+function describePhoto(photo) {
+  return photos.indexOf(photo) + 1 + '枚目 · ' + photo.type;
+}
+
+function renderGallery() {
+  $('photo-count').textContent = photos.length + ' / ' + maxPhotos + '枚';
+  $('file').disabled = loadingPhotos || photos.length >= maxPhotos;
+  $('photo-list').replaceChildren();
+  for (const photo of photos) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'photo-thumb';
+    button.setAttribute('aria-pressed', String(photo === activePhoto));
+    button.title = photo.file.name;
+    const image = document.createElement('img');
+    image.src = photo.url;
+    image.alt = '';
+    const label = document.createElement('span');
+    label.textContent = describePhoto(photo);
+    button.append(image, label);
+    button.onclick = () => selectPhoto(photo);
+    $('photo-list').append(button);
+  }
+  const position = photos.indexOf(activePhoto);
+  $('photo-earlier').disabled = position <= 0;
+  $('photo-later').disabled = position < 0 || position === photos.length - 1;
+  $('download-set').disabled = !photos.length || exportingSet;
+}
+
+function selectPhoto(photo) {
+  activePhoto = photo;
+  renderGallery();
+  $('photowrap').hidden = !photo;
+  $('photo-note').disabled = $('scan').disabled = !photo;
+  $('photo-note').value = photo?.note ?? '';
+  for (const id of ['original', 'original-copy']) {
+    if (photo) $(id).src = photo.url;
+    else $(id).removeAttribute('src');
+  }
+  renderCandidates();
+  draw();
+  if (!photo) return;
+  $('photo-type').value = photo.type;
+  $('bgwhite').disabled = $('bggray').disabled = !photo.canCutout;
+  $('bgstatus').textContent = photo.backgroundStatus;
+}
+
+function movePhoto(offset) {
+  const from = photos.indexOf(activePhoto);
+  const to = from + offset;
+  if (from < 0 || to < 0 || to >= photos.length) return;
+  [photos[from], photos[to]] = [photos[to], photos[from]];
+  renderGallery();
+  renderCandidates();
+}
+
+function removePhoto() {
+  const index = photos.indexOf(activePhoto);
+  if (index < 0) return;
+  const [removed] = photos.splice(index, 1);
+  URL.revokeObjectURL(removed.url);
+  selectPhoto(photos[index] ?? photos[index - 1] ?? null);
+}
+
+async function loadFiles(files) {
+  if (loadingPhotos) return;
+  const selected = Array.from(files);
+  const accepted = selected.slice(0, maxPhotos - photos.length);
+  const limitReached = selected.length > accepted.length;
+  loadingPhotos = true;
+  renderGallery();
+  let errors = 0;
+  let first = null;
+  try {
+    for (const file of accepted) {
+      if (!/^image\/(jpeg|png|webp)$/i.test(file.type) &&
+          !(!file.type && /\.(jpe?g|png|webp)$/i.test(file.name))) {
+        errors++;
+        continue;
+      }
+      const url = URL.createObjectURL(file);
+      const image = new Image();
+      image.src = url;
+      try {
+        await image.decode();
+        const w = image.naturalWidth;
+        const h = image.naturalHeight;
+        const canCutout = w * h <= 16000000 && Math.max(w, h) <= 6000;
+        const photo = {
+          file, url, image, canCutout, type: '未分類', note: '',
+          items: [], scanStatus: 'この写真の色ムラ候補をチェックできます。',
+          mode: 'reset', background: null, confirmed: false, request: 0,
+          backgroundStatus: canCutout ? '白背景かグレー背景を選ぶと、この写真の背景を差し替えます。'
+            : '背景の差し替えは1,600万画素・長辺6,000pxまでです。元写真は保存できます。'
+        };
+        photos.push(photo);
+        first ??= photo;
+      } catch {
+        URL.revokeObjectURL(url);
+        errors++;
+      }
+    }
+  } finally {
+    loadingPhotos = false;
+    if (first && !activePhoto) selectPhoto(first);
+    else renderGallery();
+    const messages = [];
+    if (errors) messages.push(errors + '枚を読み込めませんでした。JPG・PNG・WebPをご利用ください。');
+    if (limitReached) messages.push('登録できる写真は1商品につき最大' + maxPhotos + '枚です。');
+    $('gallery-status').textContent = messages.join(' ');
+  }
+}
+
 function draw() {
+  const photo = activePhoto;
   const canvas = $('processed');
-  const processed = Boolean(originalImage && backgroundMap && bgMode !== 'reset');
+  const processed = Boolean(photo?.background && photo.mode !== 'reset');
   $('original-copy').hidden = processed;
   canvas.hidden = !processed;
   $('confirm-background').hidden = !processed;
-  $('background-checked').checked = false;
-  $('saveimage').disabled = true;
+  $('background-checked').checked = Boolean(processed && photo.confirmed);
+  $('saveimage').disabled = !$('background-checked').checked;
   if (!processed) {
     canvas.width = canvas.height = 1;
     return;
   }
-  canvas.width = originalImage.naturalWidth;
-  canvas.height = originalImage.naturalHeight;
+  paintPhoto(photo, canvas);
+}
+
+function paintPhoto(photo, canvas) {
+  canvas.width = photo.image.naturalWidth;
+  canvas.height = photo.image.naturalHeight;
   const ctx = canvas.getContext('2d', {willReadFrequently: true});
-  ctx.drawImage(originalImage, 0, 0);
+  ctx.drawImage(photo.image, 0, 0);
   const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  composite(pixels, backgroundMap, bgMode === 'white' ? 255 : 235);
+  composite(pixels, photo.background, photo.mode === 'white' ? 255 : 235);
   ctx.putImageData(pixels, 0, 0);
 }
 
 async function chooseBackground(mode) {
-  const request = ++backgroundRequest;
-  bgMode = mode;
+  const photo = activePhoto;
+  if (!photo) return;
+  const request = ++photo.request;
+  photo.mode = mode;
+  photo.confirmed = false;
+  const done = '背景を差し替えました。元写真と見比べてから保存できます。';
+  function setStatus(message) {
+    photo.backgroundStatus = message;
+    if (activePhoto === photo) $('bgstatus').textContent = message;
+  }
   draw();
-  if (mode === 'reset' || !originalImage || !canExportBackground) {
-    if (mode === 'reset') $('bgstatus').textContent = '元写真を表示しています。';
+  if (mode === 'reset' || !photo.canCutout) {
+    if (mode === 'reset') setStatus('元写真を表示しています。');
     return;
   }
-  if (backgroundMap) {
-    $('bgstatus').textContent = '背景を差し替えました。元写真と見比べてから保存できます。';
+  if (photo.background) {
+    setStatus(done);
     return;
   }
-  $('bgstatus').textContent = '服の輪郭を検出しています。初回はモデルの読み込みに少し時間がかかります。';
+  setStatus('服の輪郭を検出しています。初回は少し時間がかかります。');
   try {
-    const foreground = await identifySubject(originalImage);
-    if (request !== backgroundRequest) return;
+    if (!photo.pendingMask) {
+      const pending = inferenceQueue.then(() => identifySubject(photo.image));
+      inferenceQueue = pending.catch(() => undefined);
+      photo.pendingMask = pending.finally(() => { photo.pendingMask = null; });
+    }
+    const foreground = await photo.pendingMask;
+    if (request !== photo.request || !photos.includes(photo)) return;
     const map = foreground && exteriorConfidence(foreground);
     if (!map) {
-      $('bgstatus').textContent = '服の輪郭を判定できませんでした。元写真を表示しています。';
+      setStatus('服の輪郭を判定できませんでした。元写真を表示しています。');
       return;
     }
-    backgroundMap = map;
-    draw();
-    $('bgstatus').textContent = '背景を差し替えました。元写真と見比べてから保存できます。';
+    photo.background = map;
+    if (activePhoto === photo) draw();
+    setStatus(done);
   } catch {
-    if (request !== backgroundRequest) return;
-    $('bgstatus').textContent = '輪郭の検出に失敗しました。通信状況を確認して、もう一度背景を選んでください。';
+    if (request === photo.request && photos.includes(photo)) {
+      setStatus('輪郭を検出できませんでした。通信状況を確認し、背景を選び直してください。');
+    }
   }
 }
 
-async function load(file) {
-  if (!file) return;
-  if (!/^image\/(jpeg|png|webp)$/.test(file.type) &&
-      !(!file.type && /\.(jpe?g|png|webp)$/i.test(file.name))) {
-    $('status').textContent = 'JPG・PNG・WebPを選択してください';
-    return;
-  }
-  const request = ++photoRequest;
-  const url = URL.createObjectURL(file);
-  const image = new Image();
-  image.src = url;
-  try {
-    await image.decode();
-    if (request !== photoRequest) return;
-    const width = image.naturalWidth;
-    const height = image.naturalHeight;
-    const scale = Math.min(1, 820 / Math.max(width, height));
-    const analysis = document.createElement('canvas');
-    analysis.width = Math.max(4, Math.round(width * scale));
-    analysis.height = Math.max(4, Math.round(height * scale));
-    const ctx = analysis.getContext('2d', {willReadFrequently: true});
-    ctx.drawImage(image, 0, 0, analysis.width, analysis.height);
-    source = ctx.getImageData(0, 0, analysis.width, analysis.height);
-    bgMask = segment();
-    backgroundMap = null;
-    backgroundRequest++;
-    bgMode = 'reset';
-    canExportBackground = width * height <= 16000000 && Math.max(width, height) <= 6000;
-
-    const previous = originalUrl;
-    originalUrl = url;
-    originalFile = file;
-    originalImage = image;
-    $('original').src = $('original-copy').src = url;
-    if (previous) URL.revokeObjectURL(previous);
-    draw();
-
-    items = [];
-    $('pins').replaceChildren();
-    $('candidates').replaceChildren();
-    $('scan').disabled = false;
-    $('photowrap').hidden = false;
-    $('scanstatus').textContent = '読み込みました。「写真から色ムラ候補を探す」を押してください。';
-    $('bgwhite').disabled = $('bggray').disabled = !canExportBackground;
-    $('bgstatus').textContent = !canExportBackground
-      ? '大きな元写真はそのまま保存できます。背景違いの作成は1,600万画素・長辺6,000pxまでです。'
-      : '白背景かグレー背景を選ぶと、背景と判定できる範囲だけ差し替えます。';
-    $('status').textContent = '';
-  } catch {
-    if (request === photoRequest) $('status').textContent = '画像を読み込めませんでした';
-  } finally {
-    if (url !== originalUrl) URL.revokeObjectURL(url);
-  }
+function pngBlob(canvas) {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('PNGの作成に失敗しました。')), 'image/png');
+  });
 }
 
-$('drop').onclick=()=>$('file').click();$('drop').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();$('file').click()}};$('file').onchange=e=>{load(e.target.files[0]);e.target.value=''};for(let e of ['dragenter','dragover'])$('drop').addEventListener(e,x=>{x.preventDefault();$('drop').classList.add('drag')});for(let e of ['dragleave','drop'])$('drop').addEventListener(e,x=>{x.preventDefault();$('drop').classList.remove('drag')});$('drop').addEventListener('drop',e=>load(e.dataTransfer.files[0]));for(let [id,mode] of [['bgwhite','white'],['bggray','gray'],['bgreset','reset']])$(id).onclick=()=>chooseBackground(mode);$('saveoriginal').onclick = () => {
-  if (originalFile) download(originalFile, originalFile.name);
+const drop = $('drop');
+drop.onclick = () => { if (!$('file').disabled) $('file').click(); };
+drop.onkeydown = event => {
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault();
+    drop.onclick();
+  }
+};
+$('file').onchange = event => {
+  loadFiles(event.target.files);
+  event.target.value = '';
+};
+for (const type of ['dragenter', 'dragover', 'dragleave', 'drop']) {
+  drop.addEventListener(type, event => {
+    event.preventDefault();
+    drop.classList.toggle('drag', type === 'dragenter' || type === 'dragover');
+    if (type === 'drop') loadFiles(event.dataTransfer.files);
+  });
+}
+$('photo-type').onchange = event => {
+  activePhoto.type = event.target.value;
+  renderGallery();
+  renderCandidates();
+};
+$('photo-note').oninput = event => { if (activePhoto) activePhoto.note = event.target.value; };
+$('photo-earlier').onclick = () => movePhoto(-1);
+$('photo-later').onclick = () => movePhoto(1);
+$('photo-remove').onclick = removePhoto;
+for (const [id, mode] of [['bgwhite','white'], ['bggray','gray'], ['bgreset','reset']]) {
+  $(id).onclick = () => chooseBackground(mode);
+}
+$('saveoriginal').onclick = () => {
+  if (activePhoto) download(activePhoto.file, activePhoto.file.name);
 };
 $('background-checked').onchange = () => {
-  $('saveimage').disabled = !$('background-checked').checked;
+  if (!activePhoto) return;
+  activePhoto.confirmed = $('background-checked').checked;
+  $('saveimage').disabled = !activePhoto.confirmed;
 };
-$('saveimage').onclick = () => {
-  if (!$('background-checked').checked || $('processed').hidden) return;
-  $('processed').toBlob(blob => {
-    if (blob) download(blob, 'yunosato-background.png');
-  }, 'image/png');
+$('saveimage').onclick = async () => {
+  const photo = activePhoto;
+  if (!photo?.confirmed || $('processed').hidden) return;
+  const name = imageFilename(photo, photos.indexOf(photo), true);
+  try {
+    download(await pngBlob($('processed')), name);
+  } catch (error) {
+    $('gallery-status').textContent = error.message;
+  }
 };
+
+let exportingSet = false;
+const lookupCrc = Uint32Array.from({length: 256}, (_, value) => {
+  let crc = value;
+  for (let i = 0; i < 8; i++) crc = (crc >>> 1) ^ (crc & 1 ? 0xedb88320 : 0);
+  return crc >>> 0;
+});
+
+function imageFilename(photo, index, processed) {
+  const extension = /\.(jpe?g|png|webp)$/i.exec(photo.file.name)?.[1]?.toLowerCase()
+    ?? ({'image/png':'png','image/webp':'webp'}[photo.file.type] ?? 'jpg');
+  return String(index + 1).padStart(2, '0') + '_' + (photo.type === '未分類' ? '商品写真' : photo.type)
+    + (processed ? '_背景差し替え.png' : '_元写真.' + extension);
+}
+
+async function makeZip(entries) {
+  const body = [];
+  const directory = [];
+  let offset = 0;
+  let directorySize = 0;
+  const encoder = new TextEncoder();
+  for (const {name, blob} of entries) {
+    const filename = encoder.encode(name);
+    const content = new Uint8Array(await blob.arrayBuffer());
+    let crc = 0xffffffff;
+    for (const byte of content) crc = (crc >>> 8) ^ lookupCrc[(crc ^ byte) & 255];
+    crc = (crc ^ 0xffffffff) >>> 0;
+
+    const local = new DataView(new ArrayBuffer(30 + filename.length));
+    local.setUint32(0, 0x04034b50, true);
+    local.setUint16(4, 20, true);
+    local.setUint16(6, 0x0800, true);
+    local.setUint16(12, 33, true);
+    local.setUint32(14, crc, true);
+    local.setUint32(18, blob.size, true);
+    local.setUint32(22, blob.size, true);
+    local.setUint16(26, filename.length, true);
+    new Uint8Array(local.buffer).set(filename, 30);
+
+    const central = new DataView(new ArrayBuffer(46 + filename.length));
+    central.setUint32(0, 0x02014b50, true);
+    central.setUint16(4, 20, true);
+    central.setUint16(6, 20, true);
+    central.setUint16(8, 0x0800, true);
+    central.setUint16(14, 33, true);
+    central.setUint32(16, crc, true);
+    central.setUint32(20, blob.size, true);
+    central.setUint32(24, blob.size, true);
+    central.setUint16(28, filename.length, true);
+    central.setUint32(42, offset, true);
+    new Uint8Array(central.buffer).set(filename, 46);
+    body.push(local.buffer, blob);
+    directory.push(central.buffer);
+    offset += local.byteLength + blob.size;
+    directorySize += central.byteLength;
+  }
+  const end = new DataView(new ArrayBuffer(22));
+  end.setUint32(0, 0x06054b50, true);
+  end.setUint16(8, entries.length, true);
+  end.setUint16(10, entries.length, true);
+  end.setUint32(12, directorySize, true);
+  end.setUint32(16, offset, true);
+  return new Blob([...body, ...directory, end.buffer], {type: 'application/zip'});
+}
+
+$('download-set').onclick = async () => {
+  if (exportingSet || !photos.length) return;
+  const selected = photos.map(photo => ({...photo}));
+  const canvas = document.createElement('canvas');
+  exportingSet = true;
+  renderGallery();
+  $('gallery-status').textContent = '写真をZIPにまとめています…';
+  try {
+    const entries = [];
+    for (const [index, photo] of selected.entries()) {
+      const processed = Boolean(photo.confirmed && photo.background && photo.mode !== 'reset');
+      if (processed) paintPhoto(photo, canvas);
+      entries.push({name: imageFilename(photo, index, processed),
+        blob: processed ? await pngBlob(canvas) : photo.file});
+    }
+    download(await makeZip(entries), 'yunosato-product-photos.zip');
+    $('gallery-status').textContent = selected.length + '枚の写真をZIPで保存しました。';
+  } catch {
+    $('gallery-status').textContent = '一括保存できませんでした。写真ごとの保存ボタンも使えます。';
+  } finally {
+    canvas.width = canvas.height = 1;
+    exportingSet = false;
+    renderGallery();
+  }
+};
+
 function findColorCandidates({width, height, data}, background) {
   if (!background) return [];
   const step = Math.max(4, Math.round(Math.max(width, height) / 85));
@@ -315,9 +534,91 @@ function findColorCandidates({width, height, data}, background) {
   return chosen;
 }
 
-function scan(){if(!source)return;const chosen=findColorCandidates(source,bgMask);items=chosen.map((c,i)=>({...c,id:i,area:'未確認',kind:'シミ・汚れ',approved:false}));$('pins').replaceChildren();$('candidates').replaceChildren();$('scanstatus').textContent=items.length?items.length+'か所の色ムラ候補を表示しました。実物で確認してください。':(bgMask?'色ムラ候補は見つかりませんでした。状態は実物で確認してください。':'服の範囲を絞れなかったため、画面の検品メモに確認結果を入力してください。');items.forEach((c,i)=>{const pin=document.createElement('button');pin.className='pin';pin.textContent=i+1;pin.style.left=c.x+'%';pin.style.top=c.y+'%';pin.onclick=()=>document.getElementById('candidate-'+i).scrollIntoView({behavior:'smooth',block:'center'});$('pins').append(pin);const card=document.createElement('div');card.className='candidate';card.id='candidate-'+i;const header=document.createElement('strong');header.textContent='候補 '+(i+1)+'｜写真上の色ムラ';card.append(header);const grid=document.createElement('div');grid.className='grid';for(const [labelText,values,key] of [['服の部位',areaOptions,'area'],['状態',kindOptions,'kind']]){const box=document.createElement('div'),label=document.createElement('label'),sel=document.createElement('select');label.textContent=labelText;values.forEach(value=>{const opt=document.createElement('option');opt.value=value;opt.textContent=value;sel.append(opt)});sel.onchange=()=>c[key]=sel.value;box.append(label,sel);grid.append(box)}card.append(grid);const label=document.createElement('label'),cb=document.createElement('input');cb.type='checkbox';cb.onchange=()=>c.approved=cb.checked;label.append(cb,document.createTextNode(' 実物を確認して、説明文に追加'));card.append(label);$('candidates').append(card)})}
+function scan() {
+  const photo = activePhoto;
+  if (!photo) return;
+  const scale = Math.min(1, 820 / Math.max(photo.image.naturalWidth, photo.image.naturalHeight));
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.max(4, Math.round(photo.image.naturalWidth * scale));
+  canvas.height = Math.max(4, Math.round(photo.image.naturalHeight * scale));
+  const ctx = canvas.getContext('2d', {willReadFrequently: true});
+  ctx.drawImage(photo.image, 0, 0, canvas.width, canvas.height);
+  const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const mask = segment(image);
+  photo.items = findColorCandidates(image, mask).map(candidate => ({
+    ...candidate, area: '未確認', kind: 'シミ・汚れ', approved: false
+  }));
+  photo.scanStatus = photo.items.length
+    ? photo.items.length + 'か所の候補を表示しました。実物で確認してください。'
+    : mask ? '色ムラ候補は見つかりませんでした。状態は実物で確認してください。'
+      : '服の範囲を絞れなかったため、この写真の検品メモに確認結果を入力してください。';
+  renderCandidates();
+}
+
+function renderCandidates() {
+  const photo = activePhoto;
+  $('pins').replaceChildren();
+  $('candidates').replaceChildren();
+  $('scanstatus').textContent = photo
+    ? describePhoto(photo) + ' — ' + photo.scanStatus : '最初に写真を追加してください。';
+  if (!photo) return;
+  photo.items.forEach((candidate, index) => {
+    const card = document.createElement('div');
+    card.className = 'candidate';
+    const heading = document.createElement('strong');
+    heading.textContent = '候補 ' + (index + 1) + '｜写真上の色ムラ';
+    card.append(heading);
+    const pin = document.createElement('button');
+    pin.type = 'button';
+    pin.className = 'pin';
+    pin.textContent = index + 1;
+    pin.setAttribute('aria-label', '候補 ' + (index + 1));
+    pin.style.left = candidate.x + '%';
+    pin.style.top = candidate.y + '%';
+    pin.onclick = () => card.scrollIntoView({behavior: 'smooth', block: 'center'});
+    $('pins').append(pin);
+
+    const grid = document.createElement('div');
+    grid.className = 'grid';
+    for (const [labelText, options, key] of [['服の部位',areaOptions,'area'], ['状態',kindOptions,'kind']]) {
+      const label = document.createElement('label');
+      label.textContent = labelText;
+      const select = document.createElement('select');
+      for (const value of options) select.add(new Option(value, value));
+      select.value = candidate[key];
+      select.onchange = () => { candidate[key] = select.value; };
+      label.append(select);
+      grid.append(label);
+    }
+    card.append(grid);
+    const label = document.createElement('label');
+    const check = document.createElement('input');
+    check.type = 'checkbox';
+    check.checked = candidate.approved;
+    check.onchange = () => { candidate.approved = check.checked; };
+    label.append(check, ' 実物を確認して、説明文に追加');
+    card.append(label);
+    $('candidates').append(card);
+  });
+}
+
+function photoFindings() {
+  const details = new Set();
+  for (const photo of photos) {
+    for (const candidate of photo.items) {
+      if (!candidate.approved || candidate.area === '未確認') continue;
+      const side = ['背面','右側面','左側面'].includes(photo.type) &&
+        !candidate.area.includes(photo.type) ? photo.type + '・' : '';
+      const area = side ? candidate.area.replace(/^前身頃/, '身頃') : candidate.area;
+      details.add(side + area + 'に' + candidate.kind + 'あり');
+    }
+    if (photo.note.trim()) details.add(photo.note.trim());
+  }
+  return [...details];
+}
+
 $('scan').onclick=scan;
-$('generate').onclick=()=>{const v=id=>$(id).value.trim(),name=v('name')||'古着アイテム';$('title').value=[v('brand'),name,v('color'),v('size')?'サイズ'+v('size'):''].filter(Boolean).join(' ');let states=items.filter(c=>c.approved&&c.area!=='未確認').map(c=>c.area+'に'+c.kind+'あり');states.push(...[...document.querySelectorAll('.defect:checked')].map(x=>x.value));if(v('notes'))states.push(v('notes'));let lines=['ご覧いただきありがとうございます。','','【商品情報】','商品：'+name];if(v('brand'))lines.push('ブランド：'+v('brand'));if(v('size'))lines.push('サイズ：'+v('size'));if(v('color'))lines.push('カラー：'+v('color'));lines.push('','【商品の状態】',...(states.length?states:['実物の状態を確認のうえ追記してください。']),'','中古品のため、掲載写真と状態をご確認のうえご検討ください。');$('description').value=lines.join('\n');$('status').textContent='文章を作成しました。内容を確認・編集してください。'};
+$('generate').onclick=()=>{const v=id=>$(id).value.trim(),name=v('name')||'古着アイテム';$('title').value=[v('brand'),name,v('color'),v('size')?'サイズ'+v('size'):''].filter(Boolean).join(' ');let states=photoFindings();states.push(...[...document.querySelectorAll('.defect:checked')].map(x=>x.value));if(v('notes'))states.push(v('notes'));let lines=['ご覧いただきありがとうございます。','','【商品情報】','商品：'+name];if(v('brand'))lines.push('ブランド：'+v('brand'));if(v('size'))lines.push('サイズ：'+v('size'));if(v('color'))lines.push('カラー：'+v('color'));lines.push('','【商品の状態】',...(states.length?states:['実物の状態を確認のうえ追記してください。']),'','中古品のため、掲載写真と状態をご確認のうえご検討ください。');$('description').value=lines.join('\n');$('status').textContent='文章を作成しました。内容を確認・編集してください。'};
 $('copy').onclick=async()=>{try{await navigator.clipboard.writeText($('description').value);$('status').textContent='コピーしました'}catch(e){$('description').select();$('status').textContent='文章を選択しました。手動でコピーしてください。'}};$('savetext').onclick=()=>{if(!$('description').value){$('status').textContent='まず出品文章を作成してください';return}download(new Blob(['タイトル：'+$('title').value+'\n\n'+$('description').value],{type:'text/plain;charset=utf-8'}),'yunosato-listing.txt')};
 })();
 </script></body></html>
