@@ -11,7 +11,7 @@ const runtimeUrl = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/';
 const modelUrl = 'https://huggingface.co/nfa04/u2netp-onnx/resolve/8e72726f035efc3d1918c96b020d536f2b69ba0c/u2netp.onnx';
 const modelSize = 320;
 let modelSession;
-let subjectMap = null;
+let backgroundMap = null;
 let backgroundRequest = 0;
 
 function loadCutoutModel() {
@@ -77,7 +77,39 @@ function scaledCoordinates(length) {
   return {index, fraction};
 }
 
-function composite(image, foreground, color) {
+const backgroundConfidence = .12;
+
+function exteriorConfidence(foreground) {
+  const area = modelSize * modelSize;
+  const outside = new Float32Array(area).fill(1);
+  const queue = new Uint32Array(area);
+  let read = 0;
+  let count = 0;
+
+  function visit(p) {
+    if (outside[p] !== 1 || !(foreground[p] < backgroundConfidence)) return;
+    outside[p] = foreground[p];
+    queue[count++] = p;
+  }
+
+  for (let i = 0; i < modelSize; i++) {
+    visit(i);
+    visit(area - modelSize + i);
+    visit(i * modelSize);
+    visit(i * modelSize + modelSize - 1);
+  }
+  while (read < count) {
+    const p = queue[read++];
+    const x = p % modelSize;
+    if (x > 0) visit(p - 1);
+    if (x < modelSize - 1) visit(p + 1);
+    if (p >= modelSize) visit(p - modelSize);
+    if (p < area - modelSize) visit(p + modelSize);
+  }
+  return count ? outside : null;
+}
+
+function composite(image, exterior, color) {
   const {data, width, height} = image;
   const columns = scaledCoordinates(width);
   const rows = scaledCoordinates(height);
@@ -90,23 +122,19 @@ function composite(image, foreground, color) {
       const col = columns.index[x];
       const right = Math.min(col + 1, modelSize - 1);
       const fx = columns.fraction[x];
-      const upper = foreground[top + col] * (1 - fx) + foreground[top + right] * fx;
-      const lower = foreground[bottom + col] * (1 - fx) + foreground[bottom + right] * fx;
-      const confidence = upper * (1 - fy) + lower * fy;
-      // Blend only on the background side of the chosen garment edge.
-      if (confidence >= .46) continue;
-      const mix = Math.min(1, (.46 - confidence) / .23);
+      const upper = exterior[top + col] * (1 - fx) + exterior[top + right] * fx;
+      const lower = exterior[bottom + col] * (1 - fx) + exterior[bottom + right] * fx;
+      if (upper * (1 - fy) + lower * fy >= backgroundConfidence) continue;
       const p = (y * width + x) * 4;
-      const alpha = data[p + 3] / 255 * (1 - mix);
-      for (let c = 0; c < 3; c++) data[p + c] = (data[p + c] * alpha + color * mix) / (alpha + mix);
-      data[p + 3] = (alpha + mix) * 255;
+      data[p] = data[p + 1] = data[p + 2] = color;
+      data[p + 3] = 255;
     }
   }
 }
 
 function draw() {
   const canvas = $('processed');
-  const processed = Boolean(originalImage && subjectMap && bgMode !== 'reset');
+  const processed = Boolean(originalImage && backgroundMap && bgMode !== 'reset');
   $('original-copy').hidden = processed;
   canvas.hidden = !processed;
   $('confirm-background').hidden = !processed;
@@ -121,7 +149,7 @@ function draw() {
   const ctx = canvas.getContext('2d', {willReadFrequently: true});
   ctx.drawImage(originalImage, 0, 0);
   const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  composite(pixels, subjectMap, bgMode === 'white' ? 255 : 235);
+  composite(pixels, backgroundMap, bgMode === 'white' ? 255 : 235);
   ctx.putImageData(pixels, 0, 0);
 }
 
@@ -133,19 +161,20 @@ async function chooseBackground(mode) {
     if (mode === 'reset') $('bgstatus').textContent = '元写真を表示しています。';
     return;
   }
-  if (subjectMap) {
+  if (backgroundMap) {
     $('bgstatus').textContent = '背景を差し替えました。元写真と見比べてから保存できます。';
     return;
   }
   $('bgstatus').textContent = '服の輪郭を検出しています。初回はモデルの読み込みに少し時間がかかります。';
   try {
-    const map = await identifySubject(originalImage);
+    const foreground = await identifySubject(originalImage);
     if (request !== backgroundRequest) return;
+    const map = foreground && exteriorConfidence(foreground);
     if (!map) {
       $('bgstatus').textContent = '服の輪郭を判定できませんでした。元写真を表示しています。';
       return;
     }
-    subjectMap = map;
+    backgroundMap = map;
     draw();
     $('bgstatus').textContent = '背景を差し替えました。元写真と見比べてから保存できます。';
   } catch {
@@ -178,7 +207,7 @@ async function load(file) {
     ctx.drawImage(image, 0, 0, analysis.width, analysis.height);
     source = ctx.getImageData(0, 0, analysis.width, analysis.height);
     bgMask = segment();
-    subjectMap = null;
+    backgroundMap = null;
     backgroundRequest++;
     bgMode = 'reset';
     canExportBackground = width * height <= 16000000 && Math.max(width, height) <= 6000;
@@ -200,7 +229,7 @@ async function load(file) {
     $('bgwhite').disabled = $('bggray').disabled = !canExportBackground;
     $('bgstatus').textContent = !canExportBackground
       ? '大きな元写真はそのまま保存できます。背景違いの作成は1,600万画素・長辺6,000pxまでです。'
-      : '白背景かグレー背景を選ぶと、自動で服を切り抜きます。';
+      : '白背景かグレー背景を選ぶと、背景と判定できる範囲だけ差し替えます。';
     $('status').textContent = '';
   } catch {
     if (request === photoRequest) $('status').textContent = '画像を読み込めませんでした';
