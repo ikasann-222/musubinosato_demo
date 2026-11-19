@@ -92,6 +92,58 @@ function protectContour(mask, width, height) {
   return opened;
 }
 
+function refineLowerShadow(mask, image) {
+  const {width, height, data} = image;
+  const maxInset = Math.max(5, Math.round(height * .028));
+  const base = new Int32Array(width).fill(-1);
+  const chosen = new Int32Array(width).fill(-1);
+
+  function light(x, y) {
+    const p = (y * width + x) * 4;
+    return .2126 * data[p] + .7152 * data[p + 1] + .0722 * data[p + 2];
+  }
+
+  for (let x = 2; x < width - 2; x++) {
+    if (!mask[(height - 1) * width + x]) continue;
+    let y = height - 2;
+    while (y > height * .64 && mask[y * width + x]) y--;
+    if (y <= height * .64 || y > height - 5) continue;
+    base[x] = y;
+    let best = 0;
+    // Find a visible edge inside the soft cast shadow, near the current outline.
+    for (let row = y - maxInset; row <= y - 3; row++) {
+      let gradient = 0;
+      for (let dx = -2; dx <= 2; dx++) {
+        gradient += light(x + dx, row + 2) - light(x + dx, row - 2);
+      }
+      const score = gradient / 5 - .43 * (y - row);
+      if (score > best && score >= 12) {
+        best = score;
+        chosen[x] = row;
+      }
+    }
+  }
+
+  const outline = new Int32Array(width).fill(-1);
+  for (let x = 5; x < width - 5; x++) {
+    if (chosen[x] < 0) continue;
+    const neighbors = [];
+    for (let sx = x - 5; sx <= x + 5; sx++) {
+      if (chosen[sx] >= 0 && Math.abs(chosen[sx] - chosen[x]) <= 6) neighbors.push(chosen[sx]);
+    }
+    if (neighbors.length < 8) continue;
+    neighbors.sort((a, b) => a - b);
+    outline[x] = Math.max(chosen[x], neighbors[Math.floor(neighbors.length / 2)]);
+  }
+
+  const refined = mask.slice();
+  for (let x = 0; x < width; x++) {
+    if (outline[x] < 0) continue;
+    for (let y = outline[x] + 2; y <= base[x]; y++) refined[y * width + x] = 1;
+  }
+  return refined;
+}
+
 function replaceBackground(original, mask, opacity, maskWidth, maskHeight, color) {
   const pixels = original.data;
   for (let y = 0; y < original.height; y++) {
@@ -162,7 +214,7 @@ async function load(file) {
     ctx.drawImage(image, 0, 0, analysis.width, analysis.height);
     source = ctx.getImageData(0, 0, analysis.width, analysis.height);
     const selection = segment();
-    bgMask = selection ? protectContour(selection, source.width, source.height) : null;
+    bgMask = selection ? protectContour(refineLowerShadow(selection, source), source.width, source.height) : null;
     clearAdjustments();
     bgMode = 'reset';
     canExportBackground = width * height <= 16000000 && Math.max(width, height) <= 6000;
