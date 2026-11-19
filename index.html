@@ -1,193 +1,157 @@
 <!doctype html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>結の郷｜古着出品アシスト</title><style>
 :root{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans JP',system-ui,sans-serif;color:#222;background:#f7f7f6}*{box-sizing:border-box}body{margin:0}header{padding:26px max(20px,calc((100vw - 1100px)/2));background:#fff;border-bottom:1px solid #ddd}header h1{font-size:23px;letter-spacing:-.02em;margin:6px 0}small,.muted{color:#727272;font-size:12px}[hidden]{display:none!important}main{max-width:1100px;margin:26px auto;padding:0 16px 44px;display:grid;grid-template-columns:1.04fr 1fr;gap:18px;align-items:start}.card{background:white;border:1px solid #dedede;border-radius:14px;padding:20px;margin-bottom:16px}h2{font-size:16px;margin:0 0 14px}h3{font-size:14px}.drop{border:2px dashed #aaa;border-radius:12px;background:#fafafa;cursor:pointer;padding:30px;text-align:center}.drop.drag{border-color:#111;background:#eee}.button{background:#fff;color:#222;border:1px solid #ccc;padding:10px 14px;border-radius:8px;font:600 13px inherit;cursor:pointer}.button.dark{background:#222;color:#fff;border-color:#222}.button:disabled{opacity:.4;cursor:not-allowed}.btnrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.photoGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.photoBox{position:relative;background:repeating-conic-gradient(#eee 0 25%,#ddd 0 50%) 50%/20px 20px;border-radius:8px;overflow:hidden}.photoBox canvas,.photoBox img{display:block;width:100%;height:auto}.pin{position:absolute;transform:translate(-50%,-50%);background:#df6536;color:white;border:2px solid white;border-radius:50%;width:26px;height:26px;font-weight:bold;cursor:pointer;box-shadow:0 0 0 3px #df653655}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}label{font-size:13px;font-weight:600;display:block;margin:0 0 5px}input[type=text],select,textarea{display:block;width:100%;padding:10px;background:#fff;color:#222;border:1px solid #ccc;border-radius:8px;font:14px inherit}textarea{resize:vertical}input[type=checkbox]{accent-color:#222}.candidate{padding:13px;border:1px solid #ddd;border-radius:10px;margin-top:10px}.candidate .grid{margin:10px 0}.checkboxes{display:grid;grid-template-columns:1fr 1fr;gap:8px}.checkboxes label{font-weight:400}.tip{background:#f1f1ef;padding:12px;border-radius:9px;font-size:12px;color:#555;line-height:1.7}.status{font-size:13px;color:#666;margin-top:10px}section>div+div{margin-top:11px}@media(max-width:760px){main{display:block}.card{padding:15px}header{padding:22px 18px}.drop{padding:22px 12px}}
-.edge-tools{margin-top:10px;padding:10px;border:1px solid #dedede;border-radius:8px}.edge-tools summary{cursor:pointer;font-weight:600}.edge-tools p{margin:6px 0}.edge-tools button[aria-pressed="true"]{background:#222;color:#fff}.photoBox canvas.editing{cursor:crosshair;touch-action:none}.edge-tools label{display:flex;align-items:center;gap:8px;margin-top:8px}
-</style></head><body><header><small>株式会社 結の郷 様 ／ 実証用プロトタイプ</small><h1>古着出品アシスト</h1><small>写真・状態確認・背景加工・出品文作成を一つの画面で</small></header><main><section><div class="card"><h2>01 / 商品写真</h2><div class="drop" id="drop" role="button" tabindex="0">▧<br><strong>写真を選ぶ / ドロップする</strong><p class="muted">JPG・PNG・WebP</p></div><input type="file" id="file" accept="image/jpeg,image/png,image/webp" hidden><div id="photowrap" hidden><p class="muted">検出候補の番号は画像上に表示します。クリックすると確認欄へ移動します。</p><div class="photoGrid"><div><label>元写真と検出位置</label><div class="photoBox" id="originalBox"><img id="original" alt="アップロードした元写真"><div id="pins"></div></div></div><div><label>背景違いのプレビュー</label><div class="photoBox"><img id="original-copy" alt="元写真のプレビュー"><canvas id="processed" hidden></canvas></div></div></div><div class="btnrow"><button class="button" id="bgwhite">白背景</button><button class="button" id="bggray">グレー背景</button><button class="button" id="bgreset">元写真</button><button class="button" id="saveoriginal">元ファイルを保存</button><button class="button" id="saveimage" disabled>背景違いをPNG保存</button></div><details class="edge-tools" id="edge-tools" hidden><summary>残った影・輪郭を調整</summary><p class="muted">右のプレビューに残った影をなぞります。服に触れたときは「元の画素に戻す」で戻せます。</p><div class="btnrow"><button class="button" id="erase-shadow" type="button" aria-pressed="true">背景にする</button><button class="button" id="restore-photo" type="button" aria-pressed="false">元の画素に戻す</button><button class="button" id="undo-mask" type="button" disabled>一手戻す</button><button class="button" id="reset-mask" type="button">自動判定に戻す</button></div><label>ブラシの太さ <input id="brush-size" type="range" min="2" max="28" value="8"></label></details><label id="confirm-background" hidden><input id="background-checked" type="checkbox"> 元写真と比べて、服の輪郭・色・汚れを確認しました</label><p class="status" id="bgstatus"></p></div></div><div class="card"><h2>02 / 商品の状態チェック</h2><div class="tip">周囲の布地と色が異なる箇所を候補として表示します。柄や照明でも反応することがあります。実物を確認し、説明文に使う箇所を選んでください。</div><div class="btnrow"><button id="scan" class="button dark" disabled>写真から色ムラ候補を探す</button></div><p id="scanstatus" class="status">最初に写真を追加してください。</p><div id="candidates"></div><h3>実物を確認して追加する状態</h3><div class="checkboxes"><label><input type="checkbox" class="defect" value="シミ・汚れあり"> シミ・汚れ</label><label><input type="checkbox" class="defect" value="毛玉あり"> 毛玉</label><label><input type="checkbox" class="defect" value="ほつれあり"> ほつれ</label><label><input type="checkbox" class="defect" value="色あせあり"> 色あせ</label></div><p><label for="notes">検品メモ</label><textarea id="notes" rows="3" placeholder="例：右袖口に小さな毛玉、前身頃の左下に薄い汚れ"></textarea></p></div></section><section><div class="card"><h2>03 / 出品情報・説明文</h2><div class="grid"><div><label for="name">品名</label><input type="text" id="name" placeholder="例：スウェット"></div><div><label for="brand">ブランド</label><input type="text" id="brand" placeholder="不明なら空欄"></div><div><label for="size">サイズ</label><input type="text" id="size" placeholder="例：L"></div><div><label for="color">カラー</label><input type="text" id="color" placeholder="実物を確認して入力"></div></div><p><button id="generate" class="button dark" style="width:100%">確認した状態を商品説明に反映</button></p><p><label for="title">商品タイトル（編集できます）</label><input type="text" id="title"></p><p><label for="description">商品説明文（編集できます）</label><textarea id="description" rows="12"></textarea></p><div class="btnrow"><button id="copy" class="button">説明文をコピー</button><button id="savetext" class="button">出品情報を保存</button></div><p id="status" class="status"></p></div><div class="card"><h2>使い方</h2><div class="tip">①写真を追加 → ②状態の候補を検索 → ③写真上の番号を確認し、服の部位と状態を選ぶ → ④実物を確認してチェック → ⑤出品文章を作成・編集 → ⑥コピーまたは保存。背景加工は元画像と必ず比較してください。</div></div></section></main>
+</style></head><body><header><small>株式会社 結の郷 様 ／ 実証用プロトタイプ</small><h1>古着出品アシスト</h1><small>写真・状態確認・背景加工・出品文作成を一つの画面で</small></header><main><section><div class="card"><h2>01 / 商品写真</h2><div class="drop" id="drop" role="button" tabindex="0">▧<br><strong>写真を選ぶ / ドロップする</strong><p class="muted">JPG・PNG・WebP</p></div><input type="file" id="file" accept="image/jpeg,image/png,image/webp" hidden><div id="photowrap" hidden><p class="muted">検出候補の番号は画像上に表示します。クリックすると確認欄へ移動します。</p><div class="photoGrid"><div><label>元写真と検出位置</label><div class="photoBox" id="originalBox"><img id="original" alt="アップロードした元写真"><div id="pins"></div></div></div><div><label>背景違いのプレビュー</label><div class="photoBox"><img id="original-copy" alt="元写真のプレビュー"><canvas id="processed" hidden></canvas></div></div></div><div class="btnrow"><button class="button" id="bgwhite">白背景</button><button class="button" id="bggray">グレー背景</button><button class="button" id="bgreset">元写真</button><button class="button" id="saveoriginal">元ファイルを保存</button><button class="button" id="saveimage" disabled>背景違いをPNG保存</button></div><label id="confirm-background" hidden><input id="background-checked" type="checkbox"> 元写真と比べて、服の輪郭・色・汚れを確認しました</label><p class="status" id="bgstatus"></p></div></div><div class="card"><h2>02 / 商品の状態チェック</h2><div class="tip">周囲の布地と色が異なる箇所を候補として表示します。柄や照明でも反応することがあります。実物を確認し、説明文に使う箇所を選んでください。</div><div class="btnrow"><button id="scan" class="button dark" disabled>写真から色ムラ候補を探す</button></div><p id="scanstatus" class="status">最初に写真を追加してください。</p><div id="candidates"></div><h3>実物を確認して追加する状態</h3><div class="checkboxes"><label><input type="checkbox" class="defect" value="シミ・汚れあり"> シミ・汚れ</label><label><input type="checkbox" class="defect" value="毛玉あり"> 毛玉</label><label><input type="checkbox" class="defect" value="ほつれあり"> ほつれ</label><label><input type="checkbox" class="defect" value="色あせあり"> 色あせ</label></div><p><label for="notes">検品メモ</label><textarea id="notes" rows="3" placeholder="例：右袖口に小さな毛玉、前身頃の左下に薄い汚れ"></textarea></p></div></section><section><div class="card"><h2>03 / 出品情報・説明文</h2><div class="grid"><div><label for="name">品名</label><input type="text" id="name" placeholder="例：スウェット"></div><div><label for="brand">ブランド</label><input type="text" id="brand" placeholder="不明なら空欄"></div><div><label for="size">サイズ</label><input type="text" id="size" placeholder="例：L"></div><div><label for="color">カラー</label><input type="text" id="color" placeholder="実物を確認して入力"></div></div><p><button id="generate" class="button dark" style="width:100%">確認した状態を商品説明に反映</button></p><p><label for="title">商品タイトル（編集できます）</label><input type="text" id="title"></p><p><label for="description">商品説明文（編集できます）</label><textarea id="description" rows="12"></textarea></p><div class="btnrow"><button id="copy" class="button">説明文をコピー</button><button id="savetext" class="button">出品情報を保存</button></div><p id="status" class="status"></p></div><div class="card"><h2>使い方</h2><div class="tip">①写真を追加 → ②状態の候補を検索 → ③写真上の番号を確認し、服の部位と状態を選ぶ → ④実物を確認してチェック → ⑤出品文章を作成・編集 → ⑥コピーまたは保存。背景加工は元画像と必ず比較してください。</div></div><p class="muted">輪郭検出モデル：<a href="https://github.com/xuebinqin/U-2-Net">U²-Net</a> · Apache 2.0</p></section></main>
 <script>
-(()=>{const $=id=>document.getElementById(id);let source=null,bgMask=null,bgOpacity=null,bgMode='reset',items=[];
+(()=>{const $=id=>document.getElementById(id);let source=null,bgMask=null,bgMode='reset',items=[];
 let originalImage=null, originalFile=null, originalUrl='', photoRequest=0, canExportBackground=false;
 const areaOptions=['未確認','襟元','右肩','左肩','右袖','左袖','右袖口','左袖口','前身頃中央','前身頃右上','前身頃左上','前身頃右下','前身頃左下','裾','背面','その他'];const kindOptions=['シミ・汚れ','色ムラ','毛玉','ほつれ','色あせ','その他'];
 function download(blob,name){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1000)}
-function buildBackgroundOpacity(mask, width, height) {
-  const radius = 3;
-  const stride = width + 1;
-  const integral = new Uint32Array(stride * (height + 1));
-  for (let y = 0; y < height; y++) {
-    let rowSum = 0;
-    for (let x = 0; x < width; x++) {
-      rowSum += mask[y * width + x];
-      integral[(y + 1) * stride + x + 1] = integral[y * stride + x + 1] + rowSum;
-    }
-  }
-
-  // Clean up thin protrusions and gaps before softening the boundary.
-  const cleaned = new Uint8Array(mask.length);
-  for (let y = 0; y < height; y++) {
-    const top = Math.max(0, y - radius);
-    const bottom = Math.min(height, y + radius + 1);
-    for (let x = 0; x < width; x++) {
-      const left = Math.max(0, x - radius);
-      const right = Math.min(width, x + radius + 1);
-      const count = integral[bottom * stride + right] - integral[bottom * stride + left]
-        - integral[top * stride + right] + integral[top * stride + left];
-      cleaned[y * width + x] = Number(count * 2 > (right - left) * (bottom - top));
-    }
-  }
-
-  const weights = [1, 4, 6, 4, 1];
-  const horizontal = new Uint8Array(mask.length);
-  const opacity = new Uint8Array(mask.length);
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      let sum = 0;
-      for (let k = 0; k < weights.length; k++) {
-        sum += weights[k] * cleaned[y * width + Math.min(width - 1, Math.max(0, x + k - 2))];
-      }
-      horizontal[y * width + x] = sum;
-    }
-  }
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      let sum = 0;
-      for (let k = 0; k < weights.length; k++) {
-        sum += weights[k] * horizontal[Math.min(height - 1, Math.max(0, y + k - 2)) * width + x];
-      }
-      opacity[y * width + x] = Math.round(sum * 255 / 256);
-    }
-  }
-  return opacity;
-}
-
 function segment(){let w=source.width,h=source.height,d=source.data,n=w*h;let samples=[[1,1],[w-2,1],[1,h-2],[w-2,h-2]].map(([x,y])=>[0,1,2].map(c=>d[4*(y*w+x)+c]));let avg=[0,1,2].map(k=>samples.reduce((a,b)=>a+b[k],0)/4),spread=Math.max(...samples.map(a=>Math.hypot(...a.map((v,k)=>v-avg[k]))));if(spread>80)return null;let visited=new Uint8Array(n),queue=new Int32Array(n),head=0,tail=0;function add(p){if(visited[p])return;const i=p*4;if(Math.hypot(d[i]-avg[0],d[i+1]-avg[1],d[i+2]-avg[2])>Math.max(34,spread*1.4+17))return;visited[p]=1;queue[tail++]=p}for(let x=0;x<w;x++){add(x);add((h-1)*w+x)}for(let y=0;y<h;y++){add(y*w);add(y*w+w-1)}while(head<tail){let p=queue[head++],x=p%w,y=(p/w)|0;if(x)add(p-1);if(x<w-1)add(p+1);if(y)add(p-w);if(y<h-1)add(p+w)}return tail/n>.08&&tail/n<.94?visited:null}
-function filterMask(mask, width, height, radius, match) {
-  const horizontal = new Uint8Array(mask.length).fill(1 - match);
-  const output = new Uint8Array(mask.length).fill(1 - match);
+const runtimeUrl = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/';
+const modelUrl = 'https://huggingface.co/nfa04/u2netp-onnx/resolve/8e72726f035efc3d1918c96b020d536f2b69ba0c/u2netp.onnx';
+const modelSize = 320;
+let modelSession;
+let subjectMap = null;
+let backgroundRequest = 0;
+
+function loadCutoutModel() {
+  modelSession ??= import(runtimeUrl + 'ort.min.mjs').then(async ort => {
+    ort.env.wasm.wasmPaths = runtimeUrl;
+    ort.env.wasm.numThreads = 1;
+    const session = await ort.InferenceSession.create(modelUrl, {executionProviders: ['wasm']});
+    return {ort, session};
+  }).catch(error => {
+    modelSession = undefined;
+    throw error;
+  });
+  return modelSession;
+}
+
+function modelInput(pixels) {
+  const area = modelSize * modelSize;
+  const values = new Float32Array(area * 3);
+  const means = [.485, .456, .406];
+  const deviations = [.229, .224, .225];
+  for (let p = 0; p < area; p++) {
+    for (let c = 0; c < 3; c++) {
+      values[c * area + p] = (pixels[p * 4 + c] / 255 - means[c]) / deviations[c];
+    }
+  }
+  return values;
+}
+
+async function identifySubject(photo) {
+  const {ort, session} = await loadCutoutModel();
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = modelSize;
+  const ctx = canvas.getContext('2d', {willReadFrequently: true});
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, modelSize, modelSize);
+  ctx.drawImage(photo, 0, 0, modelSize, modelSize);
+  const input = modelInput(ctx.getImageData(0, 0, modelSize, modelSize).data);
+  const predictions = await session.run({
+    [session.inputNames[0]]: new ort.Tensor('float32', input, [1, 3, modelSize, modelSize])
+  }, [session.outputNames[0]]);
+  const foreground = predictions[session.outputNames[0]].data;
+  let min = 1;
+  let max = 0;
+  let subject = 0;
+  for (const p of foreground) {
+    min = Math.min(min, p);
+    max = Math.max(max, p);
+    if (p >= .55) subject++;
+  }
+  if (max < .7 || max - min < .65 || subject < foreground.length * .02 ||
+      subject > foreground.length * .97) return null;
+  return foreground;
+}
+
+function scaledCoordinates(length) {
+  const index = new Uint16Array(length);
+  const fraction = new Float32Array(length);
+  for (let i = 0; i < length; i++) {
+    const p = Math.max(0, Math.min(modelSize - 1, (i + .5) * modelSize / length - .5));
+    index[i] = Math.floor(p);
+    fraction[i] = p - index[i];
+  }
+  return {index, fraction};
+}
+
+function composite(image, foreground, color) {
+  const {data, width, height} = image;
+  const columns = scaledCoordinates(width);
+  const rows = scaledCoordinates(height);
   for (let y = 0; y < height; y++) {
-    const row = y * width;
+    const row = rows.index[y];
+    const top = row * modelSize;
+    const bottom = Math.min(row + 1, modelSize - 1) * modelSize;
+    const fy = rows.fraction[y];
     for (let x = 0; x < width; x++) {
-      for (let sx = Math.max(0, x - radius); sx <= Math.min(width - 1, x + radius); sx++) {
-        if (mask[row + sx] !== match) continue;
-        horizontal[row + x] = match;
-        break;
-      }
-    }
-  }
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      for (let sy = Math.max(0, y - radius); sy <= Math.min(height - 1, y + radius); sy++) {
-        if (horizontal[sy * width + x] !== match) continue;
-        output[y * width + x] = match;
-        break;
-      }
-    }
-  }
-  return output;
-}
-
-function protectContour(mask, width, height) {
-  const radius = 6;
-  // Close narrow gaps in the garment silhouette and keep all existing foreground.
-  const eroded = filterMask(mask, width, height, radius, 0);
-  const opened = filterMask(eroded, width, height, radius, 1);
-  for (let i = 0; i < opened.length; i++) opened[i] &= mask[i];
-  return opened;
-}
-
-function refineLowerShadow(mask, image) {
-  const {width, height, data} = image;
-  const maxInset = Math.max(5, Math.round(height * .028));
-  const base = new Int32Array(width).fill(-1);
-  const chosen = new Int32Array(width).fill(-1);
-
-  function light(x, y) {
-    const p = (y * width + x) * 4;
-    return .2126 * data[p] + .7152 * data[p + 1] + .0722 * data[p + 2];
-  }
-
-  for (let x = 2; x < width - 2; x++) {
-    if (!mask[(height - 1) * width + x]) continue;
-    let y = height - 2;
-    while (y > height * .64 && mask[y * width + x]) y--;
-    if (y <= height * .64 || y > height - 5) continue;
-    base[x] = y;
-    let best = 0;
-    // Find a visible edge inside the soft cast shadow, near the current outline.
-    for (let row = y - maxInset; row <= y - 3; row++) {
-      let gradient = 0;
-      for (let dx = -2; dx <= 2; dx++) {
-        gradient += light(x + dx, row + 2) - light(x + dx, row - 2);
-      }
-      const score = gradient / 5 - .43 * (y - row);
-      if (score > best && score >= 12) {
-        best = score;
-        chosen[x] = row;
-      }
-    }
-  }
-
-  const outline = new Int32Array(width).fill(-1);
-  for (let x = 5; x < width - 5; x++) {
-    if (chosen[x] < 0) continue;
-    const neighbors = [];
-    for (let sx = x - 5; sx <= x + 5; sx++) {
-      if (chosen[sx] >= 0 && Math.abs(chosen[sx] - chosen[x]) <= 6) neighbors.push(chosen[sx]);
-    }
-    if (neighbors.length < 8) continue;
-    neighbors.sort((a, b) => a - b);
-    outline[x] = Math.max(chosen[x], neighbors[Math.floor(neighbors.length / 2)]);
-  }
-
-  const refined = mask.slice();
-  for (let x = 0; x < width; x++) {
-    if (outline[x] < 0) continue;
-    for (let y = outline[x] + 2; y <= base[x]; y++) refined[y * width + x] = 1;
-  }
-  return refined;
-}
-
-function replaceBackground(original, mask, opacity, maskWidth, maskHeight, color) {
-  const pixels = original.data;
-  for (let y = 0; y < original.height; y++) {
-    const row = Math.floor(y * maskHeight / original.height) * maskWidth;
-    for (let x = 0; x < original.width; x++) {
-      const p = row + Math.floor(x * maskWidth / original.width);
-      // Every pixel mapped to the original foreground mask is left untouched.
-      if (!mask[p] || !opacity[p]) continue;
-      const weight = opacity[p] / 255;
-      const i = (y * original.width + x) * 4;
-      const originalAlpha = pixels[i + 3] / 255;
-      const outputAlpha = originalAlpha * (1 - weight) + weight;
-      for (let channel = 0; channel < 3; channel++) {
-        pixels[i + channel] = (pixels[i + channel] * originalAlpha * (1 - weight)
-          + color * weight) / outputAlpha;
-      }
-      pixels[i + 3] = outputAlpha * 255;
+      const col = columns.index[x];
+      const right = Math.min(col + 1, modelSize - 1);
+      const fx = columns.fraction[x];
+      const upper = foreground[top + col] * (1 - fx) + foreground[top + right] * fx;
+      const lower = foreground[bottom + col] * (1 - fx) + foreground[bottom + right] * fx;
+      const confidence = upper * (1 - fy) + lower * fy;
+      // Blend only on the background side of the chosen garment edge.
+      if (confidence >= .46) continue;
+      const mix = Math.min(1, (.46 - confidence) / .23);
+      const p = (y * width + x) * 4;
+      const alpha = data[p + 3] / 255 * (1 - mix);
+      for (let c = 0; c < 3; c++) data[p + c] = (data[p + c] * alpha + color * mix) / (alpha + mix);
+      data[p + 3] = (alpha + mix) * 255;
     }
   }
 }
 
 function draw() {
   const canvas = $('processed');
-  const processed = Boolean(originalImage && bgMask && bgMode !== 'reset' && canExportBackground);
+  const processed = Boolean(originalImage && subjectMap && bgMode !== 'reset');
   $('original-copy').hidden = processed;
   canvas.hidden = !processed;
   $('confirm-background').hidden = !processed;
-  $('edge-tools').hidden = !processed;
   $('background-checked').checked = false;
   $('saveimage').disabled = true;
   if (!processed) {
     canvas.width = canvas.height = 1;
     return;
   }
-
   canvas.width = originalImage.naturalWidth;
   canvas.height = originalImage.naturalHeight;
   const ctx = canvas.getContext('2d', {willReadFrequently: true});
   ctx.drawImage(originalImage, 0, 0);
-  const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  const mask = adjustedMask ?? bgMask;
-  bgOpacity ??= buildBackgroundOpacity(mask, source.width, source.height);
-  replaceBackground(image, mask, bgOpacity, source.width, source.height, bgMode === 'white' ? 255 : 235);
-  ctx.putImageData(image, 0, 0);
+  const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  composite(pixels, subjectMap, bgMode === 'white' ? 255 : 235);
+  ctx.putImageData(pixels, 0, 0);
+}
+
+async function chooseBackground(mode) {
+  const request = ++backgroundRequest;
+  bgMode = mode;
+  draw();
+  if (mode === 'reset' || !originalImage || !canExportBackground) {
+    if (mode === 'reset') $('bgstatus').textContent = '元写真を表示しています。';
+    return;
+  }
+  if (subjectMap) {
+    $('bgstatus').textContent = '背景を差し替えました。元写真と見比べてから保存できます。';
+    return;
+  }
+  $('bgstatus').textContent = '服の輪郭を検出しています。初回はモデルの読み込みに少し時間がかかります。';
+  try {
+    const map = await identifySubject(originalImage);
+    if (request !== backgroundRequest) return;
+    if (!map) {
+      $('bgstatus').textContent = '服の輪郭を判定できませんでした。元写真を表示しています。';
+      return;
+    }
+    subjectMap = map;
+    draw();
+    $('bgstatus').textContent = '背景を差し替えました。元写真と見比べてから保存できます。';
+  } catch {
+    if (request !== backgroundRequest) return;
+    $('bgstatus').textContent = '輪郭の検出に失敗しました。通信状況を確認して、もう一度背景を選んでください。';
+  }
 }
 
 async function load(file) {
@@ -213,9 +177,9 @@ async function load(file) {
     const ctx = analysis.getContext('2d', {willReadFrequently: true});
     ctx.drawImage(image, 0, 0, analysis.width, analysis.height);
     source = ctx.getImageData(0, 0, analysis.width, analysis.height);
-    const selection = segment();
-    bgMask = selection ? protectContour(refineLowerShadow(selection, source), source.width, source.height) : null;
-    clearAdjustments();
+    bgMask = segment();
+    subjectMap = null;
+    backgroundRequest++;
     bgMode = 'reset';
     canExportBackground = width * height <= 16000000 && Math.max(width, height) <= 6000;
 
@@ -233,11 +197,10 @@ async function load(file) {
     $('scan').disabled = false;
     $('photowrap').hidden = false;
     $('scanstatus').textContent = '読み込みました。「写真から色ムラ候補を探す」を押してください。';
-    $('bgwhite').disabled = $('bggray').disabled = !bgMask || !canExportBackground;
+    $('bgwhite').disabled = $('bggray').disabled = !canExportBackground;
     $('bgstatus').textContent = !canExportBackground
       ? '大きな元写真はそのまま保存できます。背景違いの作成は1,600万画素・長辺6,000pxまでです。'
-      : bgMask ? '元写真のファイルはそのまま保存できます。背景違いを作る場合は、輪郭と汚れを見比べてください。'
-        : '服と背景を分けにくいため、元写真をそのままお使いください。';
+      : '白背景かグレー背景を選ぶと、自動で服を切り抜きます。';
     $('status').textContent = '';
   } catch {
     if (request === photoRequest) $('status').textContent = '画像を読み込めませんでした';
@@ -246,7 +209,7 @@ async function load(file) {
   }
 }
 
-$('drop').onclick=()=>$('file').click();$('drop').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();$('file').click()}};$('file').onchange=e=>{load(e.target.files[0]);e.target.value=''};for(let e of ['dragenter','dragover'])$('drop').addEventListener(e,x=>{x.preventDefault();$('drop').classList.add('drag')});for(let e of ['dragleave','drop'])$('drop').addEventListener(e,x=>{x.preventDefault();$('drop').classList.remove('drag')});$('drop').addEventListener('drop',e=>load(e.dataTransfer.files[0]));for(let [id,mode] of [['bgwhite','white'],['bggray','gray'],['bgreset','reset']])$(id).onclick=()=>{bgMode=mode;draw()};$('saveoriginal').onclick = () => {
+$('drop').onclick=()=>$('file').click();$('drop').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();$('file').click()}};$('file').onchange=e=>{load(e.target.files[0]);e.target.value=''};for(let e of ['dragenter','dragover'])$('drop').addEventListener(e,x=>{x.preventDefault();$('drop').classList.add('drag')});for(let e of ['dragleave','drop'])$('drop').addEventListener(e,x=>{x.preventDefault();$('drop').classList.remove('drag')});$('drop').addEventListener('drop',e=>load(e.dataTransfer.files[0]));for(let [id,mode] of [['bgwhite','white'],['bggray','gray'],['bgreset','reset']])$(id).onclick=()=>chooseBackground(mode);$('saveoriginal').onclick = () => {
   if (originalFile) download(originalFile, originalFile.name);
 };
 $('background-checked').onchange = () => {
@@ -258,100 +221,6 @@ $('saveimage').onclick = () => {
     if (blob) download(blob, 'yunosato-background.png');
   }, 'image/png');
 };
-let adjustedMask = null;
-let previousMask = null;
-let stroke = null;
-let brushMode = 1;
-
-function clearAdjustments() {
-  adjustedMask = previousMask = null;
-  stroke = null;
-  bgOpacity = null;
-  $('undo-mask').disabled = true;
-}
-
-function applyBrush(mask, width, height, from, to, radius, value) {
-  const dx = to.x - from.x;
-  const dy = to.y - from.y;
-  const lengthSquared = dx * dx + dy * dy;
-  const left = Math.max(0, Math.floor(Math.min(from.x, to.x) - radius));
-  const right = Math.min(width - 1, Math.ceil(Math.max(from.x, to.x) + radius));
-  const top = Math.max(0, Math.floor(Math.min(from.y, to.y) - radius));
-  const bottom = Math.min(height - 1, Math.ceil(Math.max(from.y, to.y) + radius));
-  for (let y = top; y <= bottom; y++) {
-    for (let x = left; x <= right; x++) {
-      const projection = lengthSquared
-        ? Math.max(0, Math.min(1, ((x - from.x) * dx + (y - from.y) * dy) / lengthSquared))
-        : 0;
-      if (Math.hypot(x - from.x - dx * projection, y - from.y - dy * projection) <= radius) {
-        mask[y * width + x] = value;
-      }
-    }
-  }
-}
-
-const previewCanvas = $('processed');
-function brushPoint(event) {
-  const rect = previewCanvas.getBoundingClientRect();
-  return {x: (event.clientX - rect.left) * source.width / rect.width,
-    y: (event.clientY - rect.top) * source.height / rect.height};
-}
-
-function moveBrush(event) {
-  if (!stroke || stroke.id !== event.pointerId) return;
-  const point = brushPoint(event);
-  const radius = Number($('brush-size').value);
-  applyBrush(adjustedMask, source.width, source.height, stroke.point, point, radius, brushMode);
-  stroke.point = point;
-  // Show the stroke immediately, then render the full-resolution result on release.
-  const ctx = previewCanvas.getContext('2d');
-  const sx = previewCanvas.width / source.width;
-  const sy = previewCanvas.height / source.height;
-  ctx.save();
-  ctx.scale(sx, sy);
-  ctx.fillStyle = brushMode ? (bgMode === 'white' ? '#fff' : '#ebebeb') : 'rgba(70, 98, 125, .45)';
-  ctx.beginPath();
-  ctx.arc(point.x, point.y, radius, 0, 2 * Math.PI);
-  ctx.fill();
-  ctx.restore();
-}
-
-previewCanvas.addEventListener('pointerdown', event => {
-  if (!bgMask || !$('edge-tools').open || stroke || event.button !== 0) return;
-  $('background-checked').checked = false;
-  $('saveimage').disabled = true;
-  previousMask = adjustedMask;
-  adjustedMask = (adjustedMask ?? bgMask).slice();
-  stroke = {id: event.pointerId, point: brushPoint(event)};
-  previewCanvas.setPointerCapture(event.pointerId);
-  moveBrush(event);
-});
-previewCanvas.addEventListener('pointermove', moveBrush);
-for (const name of ['pointerup', 'pointercancel', 'lostpointercapture']) {
-  previewCanvas.addEventListener(name, event => {
-    if (!stroke || stroke.id !== event.pointerId) return;
-    stroke = null;
-    bgOpacity = null;
-    $('undo-mask').disabled = false;
-    draw();
-  });
-}
-for (const [id, value] of [['erase-shadow', 1], ['restore-photo', 0]]) {
-  $(id).onclick = () => {
-    brushMode = value;
-    $('erase-shadow').setAttribute('aria-pressed', String(value === 1));
-    $('restore-photo').setAttribute('aria-pressed', String(value === 0));
-  };
-}
-$('edge-tools').ontoggle = () => previewCanvas.classList.toggle('editing', $('edge-tools').open);
-$('undo-mask').onclick = () => {
-  adjustedMask = previousMask;
-  previousMask = null;
-  bgOpacity = null;
-  $('undo-mask').disabled = true;
-  draw();
-};
-$('reset-mask').onclick = () => { clearAdjustments(); draw(); };
 function findColorCandidates({width, height, data}, background) {
   if (!background) return [];
   const step = Math.max(4, Math.round(Math.max(width, height) / 85));
