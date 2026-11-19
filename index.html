@@ -1,11 +1,12 @@
 <!doctype html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>結の郷｜古着出品アシスト</title><style>
 :root{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans JP',system-ui,sans-serif;color:#222;background:#f7f7f6}*{box-sizing:border-box}body{margin:0}header{padding:26px max(20px,calc((100vw - 1100px)/2));background:#fff;border-bottom:1px solid #ddd}header h1{font-size:23px;letter-spacing:-.02em;margin:6px 0}small,.muted{color:#727272;font-size:12px}[hidden]{display:none!important}main{max-width:1100px;margin:26px auto;padding:0 16px 44px;display:grid;grid-template-columns:1.04fr 1fr;gap:18px;align-items:start}.card{background:white;border:1px solid #dedede;border-radius:14px;padding:20px;margin-bottom:16px}h2{font-size:16px;margin:0 0 14px}h3{font-size:14px}.drop{border:2px dashed #aaa;border-radius:12px;background:#fafafa;cursor:pointer;padding:30px;text-align:center}.drop.drag{border-color:#111;background:#eee}.button{background:#fff;color:#222;border:1px solid #ccc;padding:10px 14px;border-radius:8px;font:600 13px inherit;cursor:pointer}.button.dark{background:#222;color:#fff;border-color:#222}.button:disabled{opacity:.4;cursor:not-allowed}.btnrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.photoGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.photoBox{position:relative;background:repeating-conic-gradient(#eee 0 25%,#ddd 0 50%) 50%/20px 20px;border-radius:8px;overflow:hidden}.photoBox canvas,.photoBox img{display:block;width:100%;height:auto}.pin{position:absolute;transform:translate(-50%,-50%);background:#df6536;color:white;border:2px solid white;border-radius:50%;width:26px;height:26px;font-weight:bold;cursor:pointer;box-shadow:0 0 0 3px #df653655}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}label{font-size:13px;font-weight:600;display:block;margin:0 0 5px}input[type=text],select,textarea{display:block;width:100%;padding:10px;background:#fff;color:#222;border:1px solid #ccc;border-radius:8px;font:14px inherit}textarea{resize:vertical}input[type=checkbox]{accent-color:#222}.candidate{padding:13px;border:1px solid #ddd;border-radius:10px;margin-top:10px}.candidate .grid{margin:10px 0}.checkboxes{display:grid;grid-template-columns:1fr 1fr;gap:8px}.checkboxes label{font-weight:400}.tip{background:#f1f1ef;padding:12px;border-radius:9px;font-size:12px;color:#555;line-height:1.7}.status{font-size:13px;color:#666;margin-top:10px}section>div+div{margin-top:11px}@media(max-width:760px){main{display:block}.card{padding:15px}header{padding:22px 18px}.drop{padding:22px 12px}}
 .gallery-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin:12px 0}.photo-list{display:flex;gap:8px;overflow-x:auto;padding:3px 2px 6px}.photo-list:empty{display:none}.photo-thumb{flex:0 0 92px;width:92px;background:white;border:1px solid #ccc;border-radius:8px;padding:4px;cursor:pointer;font:inherit;font-size:11px}.photo-thumb[aria-pressed="true"]{outline:2px solid #222;outline-offset:1px}.photo-thumb img{width:100%;height:68px;display:block;object-fit:contain;background:#f3f3f1;border-radius:4px;margin-bottom:4px}.photo-thumb span{display:block;overflow-wrap:anywhere}.photo-actions{display:flex;gap:8px;align-items:end;flex-wrap:wrap;margin-bottom:12px}.photo-actions label{margin:0}.photo-actions .btnrow{margin:0}.photo-actions select{margin-top:4px}.gallery-head .button,.photo-actions .button{padding:7px 9px}
+.mark-mode img{cursor:crosshair}.mark-mode .pin{pointer-events:none}.pin.manual{background:#365e6a;box-shadow:0 0 0 3px #365e6a55}.candidate.excluded{background:#f4f4f3;color:#555}.candidate.excluded strong{margin-right:8px}.candidate>button{margin-top:8px}#add-mark[aria-pressed="true"]{outline:2px solid #222}#excluded-count:empty{display:none}
 </style></head><body><header><small>株式会社 結の郷 様 ／ 実証用プロトタイプ</small><h1>古着出品アシスト</h1><small>写真・状態確認・背景加工・出品文作成を一つの画面で</small></header><main><section><div class="card"><h2>01 / 商品写真</h2><div class="drop" id="drop" role="button" tabindex="0">▧<br><strong>写真を追加 / まとめてドロップする</strong><p class="muted">JPG・PNG・WebP</p></div><input type="file" id="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" multiple hidden>
 <div class="gallery-head"><span id="photo-count" class="muted">0 / 20枚</span><button class="button" type="button" id="download-set" disabled>写真をまとめて保存（ZIP）</button></div>
 <div id="photo-list" class="photo-list" role="group" aria-label="商品写真の一覧"></div><p id="gallery-status" class="status" role="status"></p>
 <div id="photowrap" hidden>
-<div class="photo-actions"><label>写っている面・部位<select id="photo-type"><option>未分類</option><option>正面</option><option>背面</option><option>右側面</option><option>左側面</option><option>タグ</option><option>汚れ・傷のアップ</option><option>その他</option></select></label><div class="btnrow"><button class="button" type="button" id="photo-earlier">前へ移動</button><button class="button" type="button" id="photo-later">後ろへ移動</button><button class="button" type="button" id="photo-remove">この写真を外す</button></div></div><p class="muted">検出候補の番号は画像上に表示します。クリックすると確認欄へ移動します。</p><div class="photoGrid"><div><label>元写真と検出位置</label><div class="photoBox" id="originalBox"><img id="original" alt="アップロードした元写真"><div id="pins"></div></div></div><div><label>背景違いのプレビュー</label><div class="photoBox"><img id="original-copy" alt="元写真のプレビュー"><canvas id="processed" hidden></canvas></div></div></div><div class="btnrow"><button class="button" id="bgwhite">白背景</button><button class="button" id="bggray">グレー背景</button><button class="button" id="bgreset">元写真</button><button class="button" id="saveoriginal">元ファイルを保存</button><button class="button" id="saveimage" disabled>背景違いをPNG保存</button></div><label id="confirm-background" hidden><input id="background-checked" type="checkbox"> 元写真と比べて、服の輪郭・色・汚れを確認しました</label><p class="status" id="bgstatus"></p></div></div><div class="card"><h2>02 / 商品の状態チェック</h2><div class="tip">周囲の布地と色が異なる箇所を候補として表示します。柄や照明でも反応することがあります。実物を確認し、説明文に使う箇所を選んでください。</div><div class="btnrow"><button id="scan" class="button dark" disabled>写真から色ムラ候補を探す</button></div><p id="scanstatus" class="status">最初に写真を追加してください。</p><div id="candidates"></div><p><label for="photo-note">この写真の検品メモ</label><textarea id="photo-note" rows="2" placeholder="例：背面中央に薄いシミ" disabled></textarea></p><h3>実物を確認して追加する状態</h3><div class="checkboxes"><label><input type="checkbox" class="defect" value="シミ・汚れあり"> シミ・汚れ</label><label><input type="checkbox" class="defect" value="毛玉あり"> 毛玉</label><label><input type="checkbox" class="defect" value="ほつれあり"> ほつれ</label><label><input type="checkbox" class="defect" value="色あせあり"> 色あせ</label></div><p><label for="notes">商品全体の検品メモ</label><textarea id="notes" rows="3" placeholder="例：右袖口に小さな毛玉、前身頃の左下に薄い汚れ"></textarea></p></div></section><section><div class="card"><h2>03 / 出品情報・説明文</h2><div class="grid"><div><label for="name">品名</label><input type="text" id="name" placeholder="例：スウェット"></div><div><label for="brand">ブランド</label><input type="text" id="brand" placeholder="不明なら空欄"></div><div><label for="size">サイズ</label><input type="text" id="size" placeholder="例：L"></div><div><label for="color">カラー</label><input type="text" id="color" placeholder="実物を確認して入力"></div></div><p><button id="generate" class="button dark" style="width:100%">確認した状態を商品説明に反映</button></p><p><label for="title">商品タイトル（編集できます）</label><input type="text" id="title"></p><p><label for="description">商品説明文（編集できます）</label><textarea id="description" rows="12"></textarea></p><div class="btnrow"><button id="copy" class="button">説明文をコピー</button><button id="savetext" class="button">出品情報を保存</button></div><p id="status" class="status"></p></div><div class="card"><h2>使い方</h2><div class="tip">正面・背面・側面などの写真を追加し、一覧で順番を整えます。写真ごとに背景と状態を確認し、商品説明にまとめます。ZIPには、確認済みの背景差し替え画像と、それ以外の元写真が一覧順に入ります。</div></div><p class="muted">輪郭検出モデル：<a href="https://github.com/xuebinqin/U-2-Net">U²-Net</a> · Apache 2.0</p></section></main>
+<div class="photo-actions"><label>写っている面・部位<select id="photo-type"><option>未分類</option><option>正面</option><option>背面</option><option>右側面</option><option>左側面</option><option>タグ</option><option>汚れ・傷のアップ</option><option>その他</option></select></label><div class="btnrow"><button class="button" type="button" id="photo-earlier">前へ移動</button><button class="button" type="button" id="photo-later">後ろへ移動</button><button class="button" type="button" id="photo-remove">この写真を外す</button></div></div><p class="muted">検出候補の番号は画像上に表示します。クリックすると確認欄へ移動します。</p><div class="photoGrid"><div><label>元写真と検出位置</label><div class="photoBox" id="originalBox"><img id="original" alt="アップロードした元写真"><div id="pins"></div></div></div><div><label>背景違いのプレビュー</label><div class="photoBox"><img id="original-copy" alt="元写真のプレビュー"><canvas id="processed" hidden></canvas></div></div></div><div class="btnrow"><button class="button" id="bgwhite">白背景</button><button class="button" id="bggray">グレー背景</button><button class="button" id="bgreset">元写真</button><button class="button" id="saveoriginal">元ファイルを保存</button><button class="button" id="saveimage" disabled>背景違いをPNG保存</button></div><label id="confirm-background" hidden><input id="background-checked" type="checkbox"> 元写真と比べて、服の輪郭・色・汚れを確認しました</label><p class="status" id="bgstatus"></p></div></div><div class="card"><h2>02 / 商品の状態チェック</h2><div class="tip">周囲の布地との色や明るさの違いから汚れ候補を表示します。候補が違っていたら除外し、見落としは元写真上で追加できます。</div><div class="btnrow"><button id="scan" class="button dark" disabled>写真から汚れ候補を探す</button><button id="add-mark" class="button" type="button" aria-pressed="false" disabled>見落とした箇所を写真に追加</button></div><p id="mark-help" class="status" role="status" hidden>元写真の中で、追加したい箇所をクリックまたはタップしてください。</p><p id="scanstatus" class="status" role="status">最初に写真を追加してください。</p><p id="excluded-count" class="muted"></p><div id="candidates"></div><p><label for="photo-note">この写真の検品メモ</label><textarea id="photo-note" rows="2" placeholder="例：背面中央に薄いシミ" disabled></textarea></p><h3>実物を確認して追加する状態</h3><div class="checkboxes"><label><input type="checkbox" class="defect" value="シミ・汚れあり"> シミ・汚れ</label><label><input type="checkbox" class="defect" value="毛玉あり"> 毛玉</label><label><input type="checkbox" class="defect" value="ほつれあり"> ほつれ</label><label><input type="checkbox" class="defect" value="色あせあり"> 色あせ</label></div><p><label for="notes">商品全体の検品メモ</label><textarea id="notes" rows="3" placeholder="例：右袖口に小さな毛玉、前身頃の左下に薄い汚れ"></textarea></p></div></section><section><div class="card"><h2>03 / 出品情報・説明文</h2><div class="grid"><div><label for="name">品名</label><input type="text" id="name" placeholder="例：スウェット"></div><div><label for="brand">ブランド</label><input type="text" id="brand" placeholder="不明なら空欄"></div><div><label for="size">サイズ</label><input type="text" id="size" placeholder="例：L"></div><div><label for="color">カラー</label><input type="text" id="color" placeholder="実物を確認して入力"></div></div><p><button id="generate" class="button dark" style="width:100%">確認した状態を商品説明に反映</button></p><p><label for="title">商品タイトル（編集できます）</label><input type="text" id="title"></p><p><label for="description">商品説明文（編集できます）</label><textarea id="description" rows="12"></textarea></p><div class="btnrow"><button id="copy" class="button">説明文をコピー</button><button id="savetext" class="button">出品情報を保存</button></div><p id="draft-warning" class="tip" role="status" hidden>状態欄を手で編集した後に検品内容が変わりました。「確認した状態を商品説明に反映」を押すと下書きを作り直せます。</p><p id="status" class="status"></p></div><div class="card"><h2>使い方</h2><div class="tip">正面・背面・側面などの写真を追加し、一覧で順番を整えます。写真ごとに背景と状態を確認し、商品説明にまとめます。ZIPには、確認済みの背景差し替え画像と、それ以外の元写真が一覧順に入ります。</div></div><p class="muted">輪郭検出モデル：<a href="https://github.com/xuebinqin/U-2-Net">U²-Net</a> · Apache 2.0</p></section></main>
 <script>
 (()=>{const $=id=>document.getElementById(id);
 const areaOptions=['未確認','襟元','右肩','左肩','右袖','左袖','右袖口','左袖口','前身頃中央','前身頃右上','前身頃左上','前身頃右下','前身頃左下','身頃中央','身頃上部','身頃下部','裾','背面','その他'];const kindOptions=['シミ・汚れ','色ムラ','毛玉','ほつれ','色あせ','その他'];
@@ -171,9 +172,11 @@ function renderGallery() {
 
 function selectPhoto(photo) {
   activePhoto = photo;
+  setMarkMode(false);
   renderGallery();
   $('photowrap').hidden = !photo;
-  $('photo-note').disabled = $('scan').disabled = !photo;
+  $('photo-note').disabled = !photo;
+  $('scan').disabled = !photo || photo.scanned;
   $('photo-note').value = photo?.note ?? '';
   for (const id of ['original', 'original-copy']) {
     if (photo) $(id).src = photo.url;
@@ -202,6 +205,7 @@ function removePhoto() {
   const [removed] = photos.splice(index, 1);
   URL.revokeObjectURL(removed.url);
   selectPhoto(photos[index] ?? photos[index - 1] ?? null);
+  syncConditionDraft();
 }
 
 async function loadFiles(files) {
@@ -352,8 +356,9 @@ $('photo-type').onchange = event => {
   activePhoto.type = event.target.value;
   renderGallery();
   renderCandidates();
+  syncConditionDraft();
 };
-$('photo-note').oninput = event => { if (activePhoto) activePhoto.note = event.target.value; };
+$('photo-note').oninput = event => { if (activePhoto) activePhoto.note = event.target.value; syncConditionDraft(); };
 $('photo-earlier').onclick = () => movePhoto(-1);
 $('photo-later').onclick = () => movePhoto(1);
 $('photo-remove').onclick = removePhoto;
@@ -469,74 +474,90 @@ $('download-set').onclick = async () => {
   }
 };
 
-function findColorCandidates({width, height, data}, background) {
-  if (!background) return [];
-  const step = Math.max(4, Math.round(Math.max(width, height) / 85));
+function localColorHits({width, height, data}, background, step) {
   const cols = Math.floor(width / step);
   const rows = Math.floor(height / step);
   const cells = new Array(cols * rows);
+  const stride = Math.max(1, Math.floor(step / 5));
+  const samples = Math.ceil(step / stride) ** 2;
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
       let count = 0;
       let redBlue = 0;
       let greenBlue = 0;
-      for (let dy = 1; dy < step; dy += 2) {
-        for (let dx = 1; dx < step; dx += 2) {
+      let light = 0;
+      for (let dy = 0; dy < step; dy += stride) {
+        for (let dx = 0; dx < step; dx += stride) {
           const pixel = (row * step + dy) * width + col * step + dx;
           const i = pixel * 4;
           if (background[pixel] || data[i + 3] < 250) continue;
-          redBlue += data[i] - data[i + 2];
-          greenBlue += data[i + 1] - data[i + 2];
+          const r = data[i], g = data[i + 1], b = data[i + 2];
+          redBlue += r - b;
+          greenBlue += g - b;
+          light += .2126 * r + .7152 * g + .0722 * b;
           count++;
         }
       }
-      if (count === Math.floor(step / 2) ** 2) {
-        cells[row * cols + col] = [redBlue / count, greenBlue / count];
-      }
+      if (count === samples) cells[row * cols + col] = [redBlue / count, greenBlue / count, light / count];
     }
   }
+
   const hits = [];
-  function median(values) {
-    values.sort((a, b) => a - b);
-    return values[Math.floor(values.length / 2)];
-  }
   for (let row = 2; row < rows - 2; row++) {
     for (let col = 2; col < cols - 2; col++) {
       const cell = cells[row * cols + col];
       if (!cell) continue;
-      const nearby = [];
+      const ring = [];
       for (let dy = -2; dy <= 2; dy++) {
         for (let dx = -2; dx <= 2; dx++) {
           if (Math.max(Math.abs(dx), Math.abs(dy)) !== 2) continue;
           const neighbor = cells[(row + dy) * cols + col + dx];
-          if (neighbor) nearby.push(neighbor);
+          if (neighbor) ring.push(neighbor);
         }
       }
-      if (nearby.length < 11) continue;
-      const patterned = [0, 1].some(index => {
-        const values = nearby.map(value => value[index]).sort((a, b) => a - b);
-        return values[Math.floor(values.length * .8)] - values[Math.floor(values.length * .2)] > 12;
-      });
-      if (patterned) continue;
-      const score = Math.hypot(...cell.map((value, index) =>
-        value - median(nearby.map(neighbor => neighbor[index]))));
-      if (score >= 10) {
-        hits.push({x: (col + .5) * step / width * 100, y: (row + .5) * step / height * 100, score});
-      }
+      if (ring.length < 11) continue;
+      const channels = cell.map((_, channel) => ring.map(neighbor => neighbor[channel]).sort((a, b) => a - b));
+      const center = channels.map(values => values[Math.floor(values.length / 2)]);
+      const spread = channels.map(values => values[Math.floor(values.length * .8)] - values[Math.floor(values.length * .2)]);
+      const chroma = Math.hypot(cell[0] - center[0], cell[1] - center[1]);
+      const brightness = cell[2] - center[2];
+      const sameDirection = ring.filter(neighbor => Math.sign(brightness) * (cell[2] - neighbor[2]) > 9).length;
+      const coloredSpot = Math.max(spread[0], spread[1]) <= 14 && chroma >= 13.5 + Math.max(spread[0], spread[1]) * .4;
+      const lineLike = [[1,0],[0,1],[1,1],[1,-1]].filter(([dx,dy]) =>
+        [-1,1].every(direction => {
+          const adjacent = cells[(row + dy * direction) * cols + col + dx * direction];
+          return adjacent && Math.sign(brightness) * (adjacent[2] - center[2]) >= Math.abs(brightness) * .50;
+        })).length === 1;
+      const darkOrLightSpot = !lineLike && ring.length >= 14 && spread[2] <= 12 &&
+        Math.abs(brightness) >= 17 && sameDirection >= ring.length * .88;
+      if (!coloredSpot && !darkOrLightSpot) continue;
+
+      hits.push({x:(col + .5) * step / width * 100, y:(row + .5) * step / height * 100,
+        coloredSpot, step, score: Math.max(coloredSpot ? chroma : 0, darkOrLightSpot ? Math.abs(brightness) * .36 : 0)});
     }
   }
+  return hits;
+}
+
+function findColorCandidates(image, background) {
+  if (!background) return [];
+  const size = Math.max(image.width, image.height);
+  const steps = [...new Set([Math.max(4, Math.round(size / 130)), Math.max(5, Math.round(size / 105)), Math.max(6, Math.round(size / 82))])];
+  const hits = steps.flatMap(step => localColorHits(image, background, step));
   hits.sort((a, b) => b.score - a.score);
   const chosen = [];
   for (const hit of hits) {
-    if (chosen.length === 4) break;
-    if (chosen.every(other => Math.hypot(hit.x - other.x, hit.y - other.y) >= 8)) chosen.push(hit);
+    if (chosen.length >= 6) break;
+    if (!hit.coloredSpot && steps.length > 1 && !hits.some(other =>
+      other.step !== hit.step && Math.hypot(hit.x - other.x, hit.y - other.y) <= 1.8)) continue;
+    if (chosen.every(other => Math.hypot(hit.x - other.x, hit.y - other.y) >= 4.5)) chosen.push(hit);
   }
   return chosen;
 }
 
 function scan() {
   const photo = activePhoto;
-  if (!photo) return;
+  if (!photo || photo.scanned) return;
   const scale = Math.min(1, 820 / Math.max(photo.image.naturalWidth, photo.image.naturalHeight));
   const canvas = document.createElement('canvas');
   canvas.width = Math.max(4, Math.round(photo.image.naturalWidth * scale));
@@ -545,68 +566,169 @@ function scan() {
   ctx.drawImage(photo.image, 0, 0, canvas.width, canvas.height);
   const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
   const mask = segment(image);
-  photo.items = findColorCandidates(image, mask).map(candidate => ({
-    ...candidate, area: '未確認', kind: 'シミ・汚れ', approved: false
-  }));
-  photo.scanStatus = photo.items.length
-    ? photo.items.length + 'か所の候補を表示しました。実物で確認してください。'
-    : mask ? '色ムラ候補は見つかりませんでした。状態は実物で確認してください。'
-      : '服の範囲を絞れなかったため、この写真の検品メモに確認結果を入力してください。';
+  const found = findColorCandidates(image, mask);
+  photo.scanned = true;
+  const distinct = found.filter(hit => photo.items.every(candidate =>
+    Math.hypot(hit.x - candidate.x, hit.y - candidate.y) >= 4.5));
+  photo.items.push(...distinct.map(hit => newFinding(hit, false)));
+  photo.scanStatus = found.length
+    ? '自動検出 ' + distinct.length + '件。実物と照合し、該当する候補を確認してください。'
+    : mask ? '自動検出の候補はありません。見つけた箇所は手動で追加できます。'
+      : '服の範囲を絞れませんでした。写真上で見つけた箇所を追加できます。';
+  $('scan').disabled = true;
   renderCandidates();
 }
 
-function renderCandidates() {
+let addingMark = false;
+let draftCondition = null;
+const conditionHeading = '【商品の状態】';
+const conditionFooter = '中古品のため、掲載写真と状態をご確認のうえご検討ください。';
+
+function conditionLines() {
+  const findings = new Set(photoFindings());
+  for (const input of document.querySelectorAll('.defect:checked')) findings.add(input.value);
+  const note = $('notes').value.trim();
+  if (note) findings.add(note);
+  return findings.size ? [...findings] : ['実物の状態を確認のうえ追記してください。'];
+}
+
+function syncConditionDraft() {
+  if (draftCondition === null || !$('description').value) return;
+  const next = conditionLines().join('\n');
+  const stale = next !== draftCondition;
+  const previousBlock = conditionHeading + '\n' + draftCondition + '\n\n' + conditionFooter;
+  if (stale && $('description').value.includes(previousBlock)) {
+    const nextBlock = conditionHeading + '\n' + next + '\n\n' + conditionFooter;
+    $('description').value = $('description').value.replace(previousBlock, () => nextBlock);
+    draftCondition = next;
+  }
+  const pending = next !== draftCondition;
+  $('draft-warning').hidden = !pending;
+  $('copy').disabled = $('savetext').disabled = pending;
+}
+
+function setMarkMode(active) {
+  addingMark = active;
+  $('add-mark').setAttribute('aria-pressed', String(active));
+  $('add-mark').textContent = active ? '位置の指定をキャンセル' : '見落とした箇所を写真に追加';
+  $('originalBox').classList.toggle('mark-mode', active);
+  $('mark-help').hidden = !active;
+}
+
+function newFinding(position, manual) {
+  return {...position, area:'未確認', kind:'シミ・汚れ', approved:false, excluded:false, manual};
+}
+
+$('add-mark').onclick = () => {
+  if (!activePhoto) return;
+  setMarkMode(!addingMark);
+  if (addingMark) $('originalBox').scrollIntoView({behavior:'smooth', block:'center'});
+};
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && addingMark) setMarkMode(false);
+});
+$('original').onclick = event => {
+  if (!addingMark || !activePhoto) return;
+  const rect = event.currentTarget.getBoundingClientRect();
+  if (!rect.width || !rect.height) return;
+  const finding = newFinding({
+    x: Math.max(0, Math.min(100, (event.clientX - rect.left) / rect.width * 100)),
+    y: Math.max(0, Math.min(100, (event.clientY - rect.top) / rect.height * 100))
+  }, true);
+  activePhoto.items.push(finding);
+  setMarkMode(false);
+  renderCandidates(finding);
+};
+
+function renderCandidates(focusFinding) {
   const photo = activePhoto;
   $('pins').replaceChildren();
   $('candidates').replaceChildren();
+  $('excluded-count').textContent = '';
+  $('add-mark').disabled = !photo;
   $('scanstatus').textContent = photo
     ? describePhoto(photo) + ' — ' + photo.scanStatus : '最初に写真を追加してください。';
   if (!photo) return;
+
+  const excluded = photo.items.filter(candidate => candidate.excluded).length;
+  if (excluded) $('excluded-count').textContent = '除外済み ' + excluded + '件';
   photo.items.forEach((candidate, index) => {
     const card = document.createElement('div');
-    card.className = 'candidate';
+    card.className = candidate.excluded ? 'candidate excluded' : 'candidate';
     const heading = document.createElement('strong');
-    heading.textContent = '候補 ' + (index + 1) + '｜写真上の色ムラ';
+    heading.textContent = (index + 1) + '｜' + (candidate.manual ? '手動で追加' : '自動検出の候補');
     card.append(heading);
+
+    const decision = document.createElement('button');
+    decision.type = 'button';
+    decision.className = 'button';
+    decision.textContent = candidate.excluded ? '候補に戻す' : '説明文から除外';
+    decision.onclick = () => {
+      candidate.excluded = !candidate.excluded;
+      candidate.approved = false;
+      renderCandidates(candidate);
+      syncConditionDraft();
+    };
+    if (candidate.excluded) {
+      card.append(decision);
+      $('candidates').append(card);
+      if (focusFinding === candidate) decision.focus();
+      return;
+    }
+
     const pin = document.createElement('button');
     pin.type = 'button';
-    pin.className = 'pin';
+    pin.className = candidate.manual ? 'pin manual' : 'pin';
     pin.textContent = index + 1;
     pin.setAttribute('aria-label', '候補 ' + (index + 1));
     pin.style.left = candidate.x + '%';
     pin.style.top = candidate.y + '%';
-    pin.onclick = () => card.scrollIntoView({behavior: 'smooth', block: 'center'});
+    pin.onclick = () => card.scrollIntoView({behavior:'smooth', block:'center'});
     $('pins').append(pin);
 
     const grid = document.createElement('div');
     grid.className = 'grid';
+    let areaSelect;
+    const check = document.createElement('input');
+    check.type = 'checkbox';
+    check.checked = candidate.approved;
+    check.disabled = candidate.area === '未確認';
+    check.onchange = () => { candidate.approved = check.checked; syncConditionDraft(); };
+
     for (const [labelText, options, key] of [['服の部位',areaOptions,'area'], ['状態',kindOptions,'kind']]) {
       const label = document.createElement('label');
       label.textContent = labelText;
       const select = document.createElement('select');
       for (const value of options) select.add(new Option(value, value));
       select.value = candidate[key];
-      select.onchange = () => { candidate[key] = select.value; };
+      if (key === 'area') areaSelect = select;
+      select.onchange = () => {
+        candidate[key] = select.value;
+        check.disabled = candidate.area === '未確認';
+        if (check.disabled) candidate.approved = check.checked = false;
+        syncConditionDraft();
+      };
       label.append(select);
       grid.append(label);
     }
     card.append(grid);
     const label = document.createElement('label');
-    const check = document.createElement('input');
-    check.type = 'checkbox';
-    check.checked = candidate.approved;
-    check.onchange = () => { candidate.approved = check.checked; };
     label.append(check, ' 実物を確認して、説明文に追加');
-    card.append(label);
+    card.append(label, decision);
     $('candidates').append(card);
+    if (focusFinding === candidate) {
+      if (candidate.manual && candidate.area === '未確認') areaSelect.focus();
+      else decision.focus();
+    }
   });
 }
+
 
 function photoFindings() {
   const details = new Set();
   for (const photo of photos) {
     for (const candidate of photo.items) {
-      if (!candidate.approved || candidate.area === '未確認') continue;
+      if (candidate.excluded || !candidate.approved || candidate.area === '未確認') continue;
       const side = ['背面','右側面','左側面'].includes(photo.type) &&
         !candidate.area.includes(photo.type) ? photo.type + '・' : '';
       const area = side ? candidate.area.replace(/^前身頃/, '身頃') : candidate.area;
@@ -618,7 +740,10 @@ function photoFindings() {
 }
 
 $('scan').onclick=scan;
-$('generate').onclick=()=>{const v=id=>$(id).value.trim(),name=v('name')||'古着アイテム';$('title').value=[v('brand'),name,v('color'),v('size')?'サイズ'+v('size'):''].filter(Boolean).join(' ');let states=photoFindings();states.push(...[...document.querySelectorAll('.defect:checked')].map(x=>x.value));if(v('notes'))states.push(v('notes'));let lines=['ご覧いただきありがとうございます。','','【商品情報】','商品：'+name];if(v('brand'))lines.push('ブランド：'+v('brand'));if(v('size'))lines.push('サイズ：'+v('size'));if(v('color'))lines.push('カラー：'+v('color'));lines.push('','【商品の状態】',...(states.length?states:['実物の状態を確認のうえ追記してください。']),'','中古品のため、掲載写真と状態をご確認のうえご検討ください。');$('description').value=lines.join('\n');$('status').textContent='文章を作成しました。内容を確認・編集してください。'};
-$('copy').onclick=async()=>{try{await navigator.clipboard.writeText($('description').value);$('status').textContent='コピーしました'}catch(e){$('description').select();$('status').textContent='文章を選択しました。手動でコピーしてください。'}};$('savetext').onclick=()=>{if(!$('description').value){$('status').textContent='まず出品文章を作成してください';return}download(new Blob(['タイトル：'+$('title').value+'\n\n'+$('description').value],{type:'text/plain;charset=utf-8'}),'yunosato-listing.txt')};
+$('generate').onclick=()=>{const v=id=>$(id).value.trim(),name=v('name')||'古着アイテム';$('title').value=[v('brand'),name,v('color'),v('size')?'サイズ'+v('size'):''].filter(Boolean).join(' ');const states=conditionLines();let lines=['ご覧いただきありがとうございます。','','【商品情報】','商品：'+name];if(v('brand'))lines.push('ブランド：'+v('brand'));if(v('size'))lines.push('サイズ：'+v('size'));if(v('color'))lines.push('カラー：'+v('color'));lines.push('','【商品の状態】',...states,'','中古品のため、掲載写真と状態をご確認のうえご検討ください。');$('description').value=lines.join('\n');draftCondition=states.join('\n');syncConditionDraft();$('status').textContent='文章を作成しました。内容を確認・編集してください。'};
+$('notes').oninput=syncConditionDraft;
+$('description').oninput=syncConditionDraft;
+for(const checkbox of document.querySelectorAll('.defect')) checkbox.onchange=syncConditionDraft;
+$('copy').onclick=async()=>{if($('copy').disabled)return;try{await navigator.clipboard.writeText($('description').value);$('status').textContent='コピーしました'}catch(e){$('description').select();$('status').textContent='文章を選択しました。手動でコピーしてください。'}};$('savetext').onclick=()=>{if($('savetext').disabled)return;if(!$('description').value){$('status').textContent='まず出品文章を作成してください';return}download(new Blob(['タイトル：'+$('title').value+'\n\n'+$('description').value],{type:'text/plain;charset=utf-8'}),'yunosato-listing.txt')};
 })();
 </script></body></html>
