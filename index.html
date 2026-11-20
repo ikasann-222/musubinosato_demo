@@ -14,7 +14,7 @@
 const viewOptions = [
   ['正面', '前側'], ['背面', '後ろ側'], ['右側面', '右横'], ['左側面', '左横'], ['', '指定なし']
 ];
-const bodyAreas = ['全体', '上部', '中央', '下部', '右上', '左上', '右下', '左下']
+const bodyAreas = ['全体', '上部', '中央', '下部', '右上', '左上', '右側', '左側', '右下', '左下']
   .map(region => '身頃の' + region);
 const areaGroups = [
   ['袖・袖口', ['右袖', '左袖', '右袖口', '左袖口']],
@@ -28,7 +28,7 @@ function findingView(photo, candidate) {
 }
 
 function fillAreaOptions(select) {
-  select.add(new Option('写真の印から位置を入れる', '自動'));
+  select.add(new Option('印の位置から部位を入れる', '自動'));
   select.add(new Option('部位を指定しない', '未確認'));
   for (const [label, values] of areaGroups) {
     const group = document.createElement('optgroup');
@@ -38,26 +38,45 @@ function fillAreaOptions(select) {
   }
 }
 
-function imageRegion(photo, candidate) {
+function positionOnGarment(photo, candidate, view) {
   const bounds = photo.garmentBounds ?? {left:0, top:0, right:100, bottom:100};
-  const x = (candidate.x - bounds.left) / (bounds.right - bounds.left);
+  const photoX = (candidate.x - bounds.left) / (bounds.right - bounds.left);
+  const x = view === '正面' ? 1 - photoX : photoX;
   const y = (candidate.y - bounds.top) / (bounds.bottom - bounds.top);
-  const regions = [
+  const left = x < .42;
+  const right = x > .58;
+  const side = left ? '左' : right ? '右' : '';
+
+  if (bounds.upperGarment && (view === '正面' || view === '背面')) {
+    if (photoX >= .36 && photoX <= .64 && y <= .20) return '襟元';
+    const cuffLevel = y >= .82 && bounds.hasLowSleeves;
+    const edge = cuffLevel ? .21 : .17;
+    if ((x <= edge || x >= 1 - edge) && y >= .25) {
+      return side + (cuffLevel ? '袖口' : '袖');
+    }
+    if (y >= .90 && photoX >= .22 && photoX <= .78) return '裾';
+    if (y <= .34) return '身頃の' + (side ? side + '上' : '上部');
+    if (y >= .66) return '身頃の' + (side ? side + '下' : '下部');
+    return '身頃の' + (side ? side + '側' : '中央');
+  }
+
+  const column = x < 1/3 ? 0 : x > 2/3 ? 2 : 1;
+  const row = y < 1/3 ? 0 : y > 2/3 ? 2 : 1;
+  return [
     ['左上', '上部中央', '右上'],
     ['左側', '中央', '右側'],
     ['左下', '下部中央', '右下']
-  ];
-  const column = x < 1/3 ? 0 : x > 2/3 ? 2 : 1;
-  const row = y < 1/3 ? 0 : y > 2/3 ? 2 : 1;
-  return regions[row][column] + '付近';
+  ][row][column] + '付近';
 }
 
 function foregroundBounds(mask, width, height) {
   if (!mask) return null;
   let left = width, top = height, right = -1, bottom = -1;
+  const rowCounts = new Uint16Array(height);
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       if (mask[y * width + x]) continue;
+      rowCounts[y]++;
       left = Math.min(left, x);
       top = Math.min(top, y);
       right = Math.max(right, x);
@@ -65,23 +84,28 @@ function foregroundBounds(mask, width, height) {
     }
   }
   if (right <= left || bottom <= top) return null;
+  const rowWidth = at => rowCounts[Math.round(top + (bottom - top) * at)];
+  const fullWidth = right - left + 1;
+  const middle = rowWidth(.43);
+  const upperGarment = middle >= fullWidth * .66 && rowWidth(.12) < middle * .85 &&
+    rowWidth(.12) > middle * .35 && middle >= (bottom - top) * .56;
   return {left:left / width * 100, top:top / height * 100,
-    right:(right + 1) / width * 100, bottom:(bottom + 1) / height * 100};
+    right:(right + 1) / width * 100, bottom:(bottom + 1) / height * 100,
+    upperGarment, hasLowSleeves: rowWidth(.83) >= middle * .8};
 }
 
 function findingText(photo, candidate) {
   const view = findingView(photo, candidate);
-  const part = candidate.area;
-  if (part === '自動') {
-    const prefix = view || '商品写真';
-    return prefix + 'の' + imageRegion(photo, candidate) + 'に' + candidate.kind + 'あり（写真で見た位置）';
-  }
+  const part = candidate.area === '自動' ? positionOnGarment(photo, candidate, view) : candidate.area;
   let location = part === '未確認' ? view : part;
-  if (part !== '未確認') {
+  if (part !== '未確認' && view) {
     if (view === '正面' || view === '背面') {
-      if (part.startsWith('身頃の')) location = (view === '正面' ? '前' : '後ろ') + part;
-      else location = part + (view === '正面' ? 'の前側' : 'の後ろ側');
-    } else if (view) {
+      const front = view === '正面';
+      if (part.startsWith('身頃の')) location = (front ? '前' : '後ろ') + part;
+      else if (part.endsWith('付近')) location = view + 'の' + part;
+      else if (part === '襟元' || part === '裾') location = (front ? '前側' : '後ろ側') + 'の' + part;
+      else location = part + (front ? 'の前側' : 'の後ろ側');
+    } else {
       location = view + 'の' + part;
     }
   }
@@ -633,9 +657,7 @@ function findColorCandidates(image, background) {
   return chosen;
 }
 
-function scan() {
-  const photo = activePhoto;
-  if (!photo || photo.scanned) return;
+function analyzePhoto(photo) {
   const scale = Math.min(1, 820 / Math.max(photo.image.naturalWidth, photo.image.naturalHeight));
   const canvas = document.createElement('canvas');
   canvas.width = Math.max(4, Math.round(photo.image.naturalWidth * scale));
@@ -645,6 +667,13 @@ function scan() {
   const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
   const mask = segment(image);
   photo.garmentBounds = foregroundBounds(mask, image.width, image.height);
+  return {image, mask};
+}
+
+function scan() {
+  const photo = activePhoto;
+  if (!photo || photo.scanned) return;
+  const {image, mask} = analyzePhoto(photo);
   const found = findColorCandidates(image, mask);
   photo.scanned = true;
   const distinct = found.filter(hit => photo.items.every(candidate =>
@@ -724,6 +753,7 @@ $('original').onclick = event => {
   if (!addingMark || !activePhoto) return;
   const rect = event.currentTarget.getBoundingClientRect();
   if (!rect.width || !rect.height) return;
+  if (activePhoto.garmentBounds === undefined) analyzePhoto(activePhoto);
   const finding = newFinding({
     x: Math.max(0, Math.min(100, (event.clientX - rect.left) / rect.width * 100)),
     y: Math.max(0, Math.min(100, (event.clientY - rect.top) / rect.height * 100))
@@ -840,7 +870,7 @@ function renderCandidates(focusFinding) {
     details.append(grid);
     const hint = document.createElement('p');
     hint.className = 'muted';
-    hint.textContent = '自動の位置は写真で見た向きです。右袖・左袖を選ぶときは、服を着たときの向きで選びます。';
+    hint.textContent = '部位の左右は着用時の向きです。自動で出た部位が違う場合は、ここで変更できます。';
     details.append(hint);
 
     const actions = document.createElement('div');
