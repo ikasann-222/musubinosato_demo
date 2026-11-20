@@ -6,10 +6,38 @@
 <div class="gallery-head"><span id="photo-count" class="muted">0 / 20枚</span><button class="button" type="button" id="download-set" disabled>写真をまとめて保存（ZIP）</button></div>
 <div id="photo-list" class="photo-list" role="group" aria-label="商品写真の一覧"></div><p id="gallery-status" class="status" role="status"></p>
 <div id="photowrap" hidden>
-<div class="photo-actions"><label>写っている面・部位<select id="photo-type"><option>未分類</option><option>正面</option><option>背面</option><option>右側面</option><option>左側面</option><option>タグ</option><option>汚れ・傷のアップ</option><option>その他</option></select></label><div class="btnrow"><button class="button" type="button" id="photo-earlier">前へ移動</button><button class="button" type="button" id="photo-later">後ろへ移動</button><button class="button" type="button" id="photo-remove">この写真を外す</button></div></div><p class="muted">検出候補の番号は画像上に表示します。クリックすると確認欄へ移動します。</p><div class="photoGrid"><div><label>元写真と検出位置</label><div class="photoBox" id="originalBox"><img id="original" alt="アップロードした元写真"><div id="pins"></div></div></div><div><label>背景違いのプレビュー</label><div class="photoBox"><img id="original-copy" alt="元写真のプレビュー"><canvas id="processed" hidden></canvas></div></div></div><div class="btnrow"><button class="button" id="bgwhite">白背景</button><button class="button" id="bggray">グレー背景</button><button class="button" id="bgreset">元写真</button><button class="button" id="saveoriginal">元ファイルを保存</button><button class="button" id="saveimage" disabled>背景違いをPNG保存</button></div><label id="confirm-background" hidden><input id="background-checked" type="checkbox"> 元写真と比べて、服の輪郭・色・汚れを確認しました</label><p class="status" id="bgstatus"></p></div></section><section class="card" aria-labelledby="review-heading"><h2 id="review-heading">02 / 商品の状態チェック</h2><div class="tip">周囲の布地との色や明るさの違いから汚れ候補を表示します。候補が違っていたら除外し、見落としは元写真上で追加できます。</div><div class="btnrow"><button id="scan" class="button dark" disabled>写真から汚れ候補を探す</button><button id="add-mark" class="button" type="button" aria-pressed="false" disabled>見落とした箇所を写真に追加</button></div><p id="mark-help" class="status" role="status" hidden>元写真の中で、追加したい箇所をクリックまたはタップしてください。</p><p id="scanstatus" class="status" role="status">最初に写真を追加してください。</p><p id="excluded-count" class="muted"></p><div id="candidates"></div><p><label for="photo-note">この写真の検品メモ</label><textarea id="photo-note" rows="2" placeholder="例：背面中央に薄いシミ" disabled></textarea></p><h3>実物を確認して追加する状態</h3><div class="checkboxes"><label><input type="checkbox" class="defect" value="シミ・汚れあり"> シミ・汚れ</label><label><input type="checkbox" class="defect" value="毛玉あり"> 毛玉</label><label><input type="checkbox" class="defect" value="ほつれあり"> ほつれ</label><label><input type="checkbox" class="defect" value="色あせあり"> 色あせ</label></div><p><label for="notes">商品全体の検品メモ</label><textarea id="notes" rows="3" placeholder="例：右袖口に小さな毛玉、前身頃の左下に薄い汚れ"></textarea></p></section><section class="card listing-editor" aria-labelledby="listing-heading"><h2 id="listing-heading">03 / 出品情報・説明文</h2><div class="grid"><div><label for="name">品名</label><input type="text" id="name" placeholder="例：スウェット"></div><div><label for="brand">ブランド</label><input type="text" id="brand" placeholder="不明なら空欄"></div><div><label for="size">サイズ</label><input type="text" id="size" placeholder="例：L"></div><div><label for="color">カラー</label><input type="text" id="color" placeholder="実物を確認して入力"></div></div><p><button id="generate" class="button dark" style="width:100%">確認した状態を商品説明に反映</button></p><p><label for="title">商品タイトル（編集できます）</label><input type="text" id="title"></p><p><label for="description">商品説明文（編集できます）</label><textarea id="description" rows="12"></textarea></p><div class="btnrow"><button id="copy" class="button">説明文をコピー</button><button id="savetext" class="button">出品情報を保存</button></div><p id="draft-warning" class="tip" role="status" hidden>状態欄を手で編集した後に検品内容が変わりました。「確認した状態を商品説明に反映」を押すと下書きを作り直せます。</p><p id="status" class="status"></p></section><section class="listing-help"><div class="card"><h2>使い方</h2><div class="tip">正面・背面・側面などの写真を追加し、一覧で順番を整えます。写真ごとに背景と状態を確認し、商品説明にまとめます。ZIPには、確認済みの背景差し替え画像と、それ以外の元写真が一覧順に入ります。</div></div><p class="muted">輪郭検出モデル：<a href="https://github.com/xuebinqin/U-2-Net">U²-Net</a> · Apache 2.0</p></section></main>
+<div class="photo-actions"><label>写っている面・部位<select id="photo-type"><option>未分類</option><option>正面</option><option>背面</option><option>右側面</option><option>左側面</option><option>タグ</option><option>汚れ・傷のアップ</option><option>その他</option></select></label><div class="btnrow"><button class="button" type="button" id="photo-earlier">前へ移動</button><button class="button" type="button" id="photo-later">後ろへ移動</button><button class="button" type="button" id="photo-remove">この写真を外す</button></div></div><p class="muted">検出候補の番号は画像上に表示します。クリックすると確認欄へ移動します。</p><div class="photoGrid"><div><label>元写真と検出位置</label><div class="photoBox" id="originalBox"><img id="original" alt="アップロードした元写真"><div id="pins"></div></div></div><div><label>背景違いのプレビュー</label><div class="photoBox"><img id="original-copy" alt="元写真のプレビュー"><canvas id="processed" hidden></canvas></div></div></div><div class="btnrow"><button class="button" id="bgwhite">白背景</button><button class="button" id="bggray">グレー背景</button><button class="button" id="bgreset">元写真</button><button class="button" id="saveoriginal">元ファイルを保存</button><button class="button" id="saveimage" disabled>背景違いをPNG保存</button></div><label id="confirm-background" hidden><input id="background-checked" type="checkbox"> 元写真と比べて、服の輪郭・色・汚れを確認しました</label><p class="status" id="bgstatus"></p></div></section><section class="card" aria-labelledby="review-heading"><h2 id="review-heading">02 / 商品の状態チェック</h2><div class="tip">周囲の布地との色や明るさの違いから汚れ候補を表示します。候補が違っていたら除外し、見落としは元写真上で追加できます。前身頃は服の前側、後ろ身頃は背中側です。左右は着たときの向きで選びます。</div><div class="btnrow"><button id="scan" class="button dark" disabled>写真から汚れ候補を探す</button><button id="add-mark" class="button" type="button" aria-pressed="false" disabled>見落とした箇所を写真に追加</button></div><p id="mark-help" class="status" role="status" hidden>元写真の中で、追加したい箇所をクリックまたはタップしてください。</p><p id="scanstatus" class="status" role="status">最初に写真を追加してください。</p><p id="excluded-count" class="muted"></p><div id="candidates"></div><p><label for="photo-note">この写真の検品メモ</label><textarea id="photo-note" rows="2" placeholder="例：背面中央に薄いシミ" disabled></textarea></p><h3>実物を確認して追加する状態</h3><div class="checkboxes"><label><input type="checkbox" class="defect" value="シミ・汚れあり"> シミ・汚れ</label><label><input type="checkbox" class="defect" value="毛玉あり"> 毛玉</label><label><input type="checkbox" class="defect" value="ほつれあり"> ほつれ</label><label><input type="checkbox" class="defect" value="色あせあり"> 色あせ</label></div><p><label for="notes">商品全体の検品メモ</label><textarea id="notes" rows="3" placeholder="例：右袖口に小さな毛玉、前身頃の左下に薄い汚れ"></textarea></p></section><section class="card listing-editor" aria-labelledby="listing-heading"><h2 id="listing-heading">03 / 出品情報・説明文</h2><div class="grid"><div><label for="name">品名</label><input type="text" id="name" placeholder="例：スウェット"></div><div><label for="brand">ブランド</label><input type="text" id="brand" placeholder="不明なら空欄"></div><div><label for="size">サイズ</label><input type="text" id="size" placeholder="例：L"></div><div><label for="color">カラー</label><input type="text" id="color" placeholder="実物を確認して入力"></div></div><p><button id="generate" class="button dark" style="width:100%">確認した状態を商品説明に反映</button></p><p><label for="title">商品タイトル（編集できます）</label><input type="text" id="title"></p><p><label for="description">商品説明文（編集できます）</label><textarea id="description" rows="12"></textarea></p><div class="btnrow"><button id="copy" class="button">説明文をコピー</button><button id="savetext" class="button">出品情報を保存</button></div><p id="status" class="status"></p></section><section class="listing-help"><div class="card"><h2>使い方</h2><div class="tip">正面・背面・側面などの写真を追加し、一覧で順番を整えます。写真ごとに背景と状態を確認し、商品説明にまとめます。ZIPには、確認済みの背景差し替え画像と、それ以外の元写真が一覧順に入ります。</div></div><p class="muted">輪郭検出モデル：<a href="https://github.com/xuebinqin/U-2-Net">U²-Net</a> · Apache 2.0</p></section></main>
 <script>
 (()=>{const $=id=>document.getElementById(id);
-const areaOptions=['未確認','襟元','右肩','左肩','右袖','左袖','右袖口','左袖口','前身頃中央','前身頃右上','前身頃左上','前身頃右下','前身頃左下','身頃中央','身頃上部','身頃下部','裾','背面','その他'];const kindOptions=['シミ・汚れ','色ムラ','毛玉','ほつれ','色あせ','その他'];
+const bodyRegions = ['全体', '上部', '中央', '下部', '右上', '左上', '右下', '左下'];
+const frontAreas = bodyRegions.map(region => '前身頃の' + region);
+const backAreas = bodyRegions.map(region => '後ろ身頃の' + region);
+const commonAreas = ['襟元', '右肩', '左肩', '右袖', '左袖', '右袖口', '左袖口',
+  '右脇', '左脇', '身頃上部', '身頃中央', '身頃下部', '裾', '背面', 'その他'];
+const kindOptions = ['シミ', '汚れ', '色ムラ', '毛玉', 'ほつれ', '色あせ', 'その他'];
+
+function fillAreaOptions(select, photo) {
+  select.add(new Option('部位を指定しない', '未確認'));
+  const groups = [['前身頃（服の前側）', frontAreas], ['後ろ身頃（服の背中側）', backAreas]];
+  if (photo.type === '背面') groups.reverse();
+  groups.push(['襟・袖・裾など', commonAreas]);
+  for (const [label, values] of groups) {
+    const group = document.createElement('optgroup');
+    group.label = label;
+    for (const value of values) group.append(new Option(value, value));
+    select.append(group);
+  }
+}
+
+function findingLocation(photo, candidate) {
+  const location = candidate.area;
+  const face = ['正面', '背面', '右側面', '左側面'].includes(photo.type) ? photo.type : '';
+  if (location === '未確認') return face;
+  if (location.startsWith('前身頃') || location.startsWith('後ろ身頃') ||
+      location === '背面' || !face || face === '正面') return location;
+  return face + 'の' + location;
+}
+
 function download(blob,name){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1000)}
 function segment(source){let w=source.width,h=source.height,d=source.data,n=w*h;let samples=[[1,1],[w-2,1],[1,h-2],[w-2,h-2]].map(([x,y])=>[0,1,2].map(c=>d[4*(y*w+x)+c]));let avg=[0,1,2].map(k=>samples.reduce((a,b)=>a+b[k],0)/4),spread=Math.max(...samples.map(a=>Math.hypot(...a.map((v,k)=>v-avg[k]))));if(spread>80)return null;let visited=new Uint8Array(n),queue=new Int32Array(n),head=0,tail=0;function add(p){if(visited[p])return;const i=p*4;if(Math.hypot(d[i]-avg[0],d[i+1]-avg[1],d[i+2]-avg[2])>Math.max(34,spread*1.4+17))return;visited[p]=1;queue[tail++]=p}for(let x=0;x<w;x++){add(x);add((h-1)*w+x)}for(let y=0;y<h;y++){add(y*w);add(y*w+w-1)}while(head<tail){let p=queue[head++],x=p%w,y=(p/w)|0;if(x)add(p-1);if(x<w-1)add(p+1);if(y)add(p-w);if(y<h-1)add(p+w)}return tail/n>.08&&tail/n<.94?visited:null}
 const runtimeUrl = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/';
@@ -593,18 +621,31 @@ function conditionLines() {
 }
 
 function syncConditionDraft() {
-  if (draftCondition === null || !$('description').value) return;
-  const next = conditionLines().join('\n');
-  const stale = next !== draftCondition;
-  const previousBlock = conditionHeading + '\n' + draftCondition + '\n\n' + conditionFooter;
-  if (stale && $('description').value.includes(previousBlock)) {
-    const nextBlock = conditionHeading + '\n' + next + '\n\n' + conditionFooter;
-    $('description').value = $('description').value.replace(previousBlock, () => nextBlock);
-    draftCondition = next;
+  const description = $('description');
+  if (!description.value.trim()) return;
+  const next = conditionLines();
+  if (next.join('\n') === draftCondition?.join('\n')) return;
+  if (draftCondition === null && next[0] === '実物の状態を確認のうえ追記してください。') return;
+
+  const paragraphs = description.value.split('\n');
+  const start = paragraphs.findIndex(line => line.trim() === conditionHeading);
+  if (start === -1) {
+    description.value = description.value.trimEnd() + '\n\n' + [conditionHeading, ...next].join('\n');
+  } else {
+    const end = paragraphs.findIndex((line, index) => index > start &&
+      (line.trim() === conditionFooter || /^【.+】$/.test(line.trim())));
+    const stop = end < 0 ? paragraphs.length : end;
+    const previousLines = new Set((draftCondition ?? []).flatMap(line => line.split('\n')).map(line => line.trim()));
+    const nextLines = new Set(next.flatMap(line => line.split('\n')).map(line => line.trim()));
+    const notes = paragraphs.slice(start + 1, stop)
+      .filter(line => !previousLines.has(line.trim()) && !nextLines.has(line.trim()));
+    while (notes.length && !notes[0].trim()) notes.shift();
+    while (notes.length && !notes.at(-1).trim()) notes.pop();
+    paragraphs.splice(start + 1, stop - start - 1, ...next, ...notes, ...(end < 0 ? [] : ['']));
+    description.value = paragraphs.join('\n');
   }
-  const pending = next !== draftCondition;
-  $('draft-warning').hidden = !pending;
-  $('copy').disabled = $('savetext').disabled = pending;
+  draftCondition = next;
+  $('status').textContent = '確認した状態を説明文に反映しました。';
 }
 
 function setMarkMode(active) {
@@ -616,7 +657,7 @@ function setMarkMode(active) {
 }
 
 function newFinding(position, manual) {
-  return {...position, area:'未確認', kind:'シミ・汚れ', approved:false, excluded:false, manual};
+  return {...position, area:'未確認', kind:'シミ', approved:false, excluded:false, manual};
 }
 
 $('add-mark').onclick = () => {
@@ -692,20 +733,22 @@ function renderCandidates(focusFinding) {
     const check = document.createElement('input');
     check.type = 'checkbox';
     check.checked = candidate.approved;
-    check.disabled = candidate.area === '未確認';
-    check.onchange = () => { candidate.approved = check.checked; syncConditionDraft(); };
+    check.onchange = () => {
+      candidate.approved = check.checked;
+      if (check.checked && !$('description').value.trim()) $('generate').onclick();
+      else syncConditionDraft();
+    };
 
-    for (const [labelText, options, key] of [['服の部位',areaOptions,'area'], ['状態',kindOptions,'kind']]) {
+    for (const [labelText, key] of [['服の部位','area'], ['状態','kind']]) {
       const label = document.createElement('label');
       label.textContent = labelText;
       const select = document.createElement('select');
-      for (const value of options) select.add(new Option(value, value));
+      if (key === 'area') fillAreaOptions(select, photo);
+      else for (const value of kindOptions) select.add(new Option(value, value));
       select.value = candidate[key];
       if (key === 'area') areaSelect = select;
       select.onchange = () => {
         candidate[key] = select.value;
-        check.disabled = candidate.area === '未確認';
-        if (check.disabled) candidate.approved = check.checked = false;
         syncConditionDraft();
       };
       label.append(select);
@@ -728,11 +771,9 @@ function photoFindings() {
   const details = new Set();
   for (const photo of photos) {
     for (const candidate of photo.items) {
-      if (candidate.excluded || !candidate.approved || candidate.area === '未確認') continue;
-      const side = ['背面','右側面','左側面'].includes(photo.type) &&
-        !candidate.area.includes(photo.type) ? photo.type + '・' : '';
-      const area = side ? candidate.area.replace(/^前身頃/, '身頃') : candidate.area;
-      details.add(side + area + 'に' + candidate.kind + 'あり');
+      if (candidate.excluded || !candidate.approved) continue;
+      const location = findingLocation(photo, candidate);
+      details.add((location ? location + 'に' : '') + candidate.kind + 'あり');
     }
     if (photo.note.trim()) details.add(photo.note.trim());
   }
@@ -740,9 +781,9 @@ function photoFindings() {
 }
 
 $('scan').onclick=scan;
-$('generate').onclick=()=>{const v=id=>$(id).value.trim(),name=v('name')||'古着アイテム';$('title').value=[v('brand'),name,v('color'),v('size')?'サイズ'+v('size'):''].filter(Boolean).join(' ');const states=conditionLines();let lines=['ご覧いただきありがとうございます。','','【商品情報】','商品：'+name];if(v('brand'))lines.push('ブランド：'+v('brand'));if(v('size'))lines.push('サイズ：'+v('size'));if(v('color'))lines.push('カラー：'+v('color'));lines.push('','【商品の状態】',...states,'','中古品のため、掲載写真と状態をご確認のうえご検討ください。');$('description').value=lines.join('\n');draftCondition=states.join('\n');syncConditionDraft();$('status').textContent='文章を作成しました。内容を確認・編集してください。'};
+$('generate').onclick=()=>{const v=id=>$(id).value.trim(),name=v('name')||'古着アイテム';$('title').value=[v('brand'),name,v('color'),v('size')?'サイズ'+v('size'):''].filter(Boolean).join(' ');const states=conditionLines();let lines=['ご覧いただきありがとうございます。','','【商品情報】','商品：'+name];if(v('brand'))lines.push('ブランド：'+v('brand'));if(v('size'))lines.push('サイズ：'+v('size'));if(v('color'))lines.push('カラー：'+v('color'));lines.push('','【商品の状態】',...states,'','中古品のため、掲載写真と状態をご確認のうえご検討ください。');$('description').value=lines.join('\n');draftCondition=states;syncConditionDraft();$('status').textContent='文章を作成しました。内容を確認・編集してください。'};
 $('notes').oninput=syncConditionDraft;
-$('description').oninput=syncConditionDraft;
+
 for(const checkbox of document.querySelectorAll('.defect')) checkbox.onchange=syncConditionDraft;
 $('copy').onclick=async()=>{if($('copy').disabled)return;try{await navigator.clipboard.writeText($('description').value);$('status').textContent='コピーしました'}catch(e){$('description').select();$('status').textContent='文章を選択しました。手動でコピーしてください。'}};$('savetext').onclick=()=>{if($('savetext').disabled)return;if(!$('description').value){$('status').textContent='まず出品文章を作成してください';return}download(new Blob(['タイトル：'+$('title').value+'\n\n'+$('description').value],{type:'text/plain;charset=utf-8'}),'yunosato-listing.txt')};
 })();
