@@ -28,6 +28,7 @@ function findingView(photo, candidate) {
 }
 
 function fillAreaOptions(select) {
+  select.add(new Option('写真の印から位置を入れる', '自動'));
   select.add(new Option('部位を指定しない', '未確認'));
   for (const [label, values] of areaGroups) {
     const group = document.createElement('optgroup');
@@ -37,9 +38,44 @@ function fillAreaOptions(select) {
   }
 }
 
+function imageRegion(photo, candidate) {
+  const bounds = photo.garmentBounds ?? {left:0, top:0, right:100, bottom:100};
+  const x = (candidate.x - bounds.left) / (bounds.right - bounds.left);
+  const y = (candidate.y - bounds.top) / (bounds.bottom - bounds.top);
+  const regions = [
+    ['左上', '上部中央', '右上'],
+    ['左側', '中央', '右側'],
+    ['左下', '下部中央', '右下']
+  ];
+  const column = x < 1/3 ? 0 : x > 2/3 ? 2 : 1;
+  const row = y < 1/3 ? 0 : y > 2/3 ? 2 : 1;
+  return regions[row][column] + '付近';
+}
+
+function foregroundBounds(mask, width, height) {
+  if (!mask) return null;
+  let left = width, top = height, right = -1, bottom = -1;
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      if (mask[y * width + x]) continue;
+      left = Math.min(left, x);
+      top = Math.min(top, y);
+      right = Math.max(right, x);
+      bottom = Math.max(bottom, y);
+    }
+  }
+  if (right <= left || bottom <= top) return null;
+  return {left:left / width * 100, top:top / height * 100,
+    right:(right + 1) / width * 100, bottom:(bottom + 1) / height * 100};
+}
+
 function findingText(photo, candidate) {
   const view = findingView(photo, candidate);
   const part = candidate.area;
+  if (part === '自動') {
+    const prefix = view || '商品写真';
+    return prefix + 'の' + imageRegion(photo, candidate) + 'に' + candidate.kind + 'あり（写真で見た位置）';
+  }
   let location = part === '未確認' ? view : part;
   if (part !== '未確認') {
     if (view === '正面' || view === '背面') {
@@ -608,6 +644,7 @@ function scan() {
   ctx.drawImage(photo.image, 0, 0, canvas.width, canvas.height);
   const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
   const mask = segment(image);
+  photo.garmentBounds = foregroundBounds(mask, image.width, image.height);
   const found = findColorCandidates(image, mask);
   photo.scanned = true;
   const distinct = found.filter(hit => photo.items.every(candidate =>
@@ -619,6 +656,7 @@ function scan() {
       : '服の範囲を絞れませんでした。写真上で見つけた箇所を追加できます。';
   $('scan').disabled = true;
   renderCandidates();
+  syncConditionDraft();
 }
 
 let addingMark = false;
@@ -671,7 +709,7 @@ function setMarkMode(active) {
 }
 
 function newFinding(position, manual) {
-  return {...position, area:'未確認', kind:'シミ', approved:false, excluded:false, manual};
+  return {...position, area:'自動', kind:'シミ', approved:false, excluded:false, manual};
 }
 
 $('add-mark').onclick = () => {
@@ -802,7 +840,7 @@ function renderCandidates(focusFinding) {
     details.append(grid);
     const hint = document.createElement('p');
     hint.className = 'muted';
-    hint.textContent = '右袖・左袖などの左右は、服を着たときの向きです。';
+    hint.textContent = '自動の位置は写真で見た向きです。右袖・左袖を選ぶときは、服を着たときの向きで選びます。';
     details.append(hint);
 
     const actions = document.createElement('div');
